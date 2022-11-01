@@ -144,7 +144,7 @@ evalPhenotypes = do
       ( \(i, p) -> do
           liftIO $
             putStrLn $
-              "\nRunning Phenotype numeber "
+              "\nRunning Phenotype number "
                 ++ show i
                 ++ " of "
                 ++ show ptc

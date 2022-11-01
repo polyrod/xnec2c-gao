@@ -1,9 +1,6 @@
----
-title: xnec2c-gao -- A genetic algorithm optimizer for xnec2c
-author: Maurizio Di Pietro DC1MDP
-date: 1. November 2022
-geometry: margin=3cm
----
+# Xnec2c-gao
+
+![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
 
 \newpage
 # From .nec to .gao file
@@ -20,7 +17,7 @@ used in arithmetic expressions to calculate antenna parameters. A SYM Card is de
     SYM symbolname := <expr>
 
 where \<expr\> is a mathematical expression consisting of Float/Integer literals,
-identifiers and operators +,-,*,/,^,(,),LOG,SIN,COS.
+identifiers and operators +,-,*,/,^,(,),SQRT,LOG,SIN,COS.
 
 So you could define the speed of light as :
 
