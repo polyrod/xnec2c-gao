@@ -168,11 +168,14 @@ runPhenotype i = do
   liftIO $ T.writeFile (B.unpack necfile) $ let (Phenotype t) = fromJust $ phenotype i in t
   printGenotype i
   unless (isJust $ xnec2c s) $ do
-    let cmd = "xnec2c  --optimize -j2  -i " ++ B.unpack necfile
-    liftIO $ putStrLn cmd
-    tid <- liftIO $ forkIO $ void $ system cmd
+    let cmd = "sleep 2 && xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
+    --liftIO $ putStrLn cmd
+    tid <- liftIO $ forkIO $ do
+      void $ system cmd
     modify (\s -> s {xnec2c = Just tid})
-  liftIO $
+  liftIO $ do
+    let touchcmd = "touch " ++ B.unpack necfile ++ ".csv"
+    void $ system touchcmd
     withINotify $ \notify -> do
       d <- addWatch notify [Modify, Create] (necfile <.> "csv") (\_ -> writeIORef csvReady True)
       untilM_ (threadDelay 300000) (readIORef csvReady)

@@ -39,7 +39,12 @@ symbol = L.symbol sc
 
 lineEnd :: Parser ()
 --lineEnd = try ((newline *> pure ()) <|>  (eof >> pure ()))
-lineEnd = gaodbg "NL" $ choice [void (single '\n'), eof, void newline, void crlf, void eol]
+lineEnd = gaodbg "NL" $ recover $ choice [void (single '\n'), eof, void newline, void crlf, void eol]
+  where recover = withRecovery $ \e -> do
+                    registerParseError e
+                    some (anySingleBut '\n')
+                    void newline
+
 
 signedNum :: Parser Float
 --signedNum = lexeme $ toRealFloat <$> L.signed sc L.scientific
@@ -191,7 +196,9 @@ parseGAOFile = do
   fc <- liftIO $ T.readFile fn
   pr <- runParserT gaoparser fn fc
   case pr of
-    Left bundle -> liftIO $ putStr (errorBundlePretty bundle)
+    Left bundle -> liftIO $ do
+      putStr (errorBundlePretty bundle)
+      errorWithoutStackTrace "Abort"
     Right m -> do
       put s {gaomodel = m}
       when (verbosity (opts s) > 0) $ liftIO $ pPrint m
