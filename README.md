@@ -15,16 +15,16 @@ your antenna model. The author of Xnec2c introduced a optimization loop that use
 
 Neoklis, 5B4AZ explains Antenna Optimization in xnec2c on his [page](http://www.5b4az.org/pages/antenna_designs.html) here as follows:
 
-| "Xnec2c monitors its .nec input file for changes and re-runs the frequency stepping loop
-|  which recalculates new data and prints to the .csv file. It is therefore possible to
-|  arrange the optimizer program to read the .csv data file, recalculate antenna parameters
-|  and save them to the .nec input file. xnec2c will then recalculate and save new
-|  frequency-dependent data to the .csv file.
-|
-|  If the optimizer program is arranged to monitor changes to the .csv file, then a continuous loop 
-|  can be created in which new antenna parameters are calculated and saved to the .nec file, 
-|  new frequency dependent data are calculated and saved to the .csv file and the loop repeated 
-|  until the desired results (optimization) are obtained."
+> "Xnec2c monitors its .nec input file for changes and re-runs the frequency stepping loop
+>  which recalculates new data and prints to the .csv file. It is therefore possible to
+>  arrange the optimizer program to read the .csv data file, recalculate antenna parameters
+>  and save them to the .nec input file. xnec2c will then recalculate and save new
+>  frequency-dependent data to the .csv file.
+>
+>  If the optimizer program is arranged to monitor changes to the .csv file, then a continuous loop 
+>  can be created in which new antenna parameters are calculated and saved to the .nec file, 
+>  new frequency dependent data are calculated and saved to the .csv file and the loop repeated 
+>  until the desired results (optimization) are obtained."
 
 # From .nec to .gao file
 
