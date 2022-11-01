@@ -1,0 +1,70 @@
+cabal-version:      2.4
+name:               xnec2c-gao
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+synopsis: xnec2c-g(enetic)a(lgorithm)o(ptimizer) - An external optimizer for xnec2c (https://www.xnec2c.org/),
+          using an genetic algorithm to evolve best VSWR/GAIN variants of a .nec antenna model.
+
+-- A longer description of the package.
+description: After you embelished a nec file with SYMBOLS and GENETICSYMBOLS to a gao file,
+             running the optimizer generates concrete nec models of genetic variants and runs
+             xnec2c optimisation loop to calculate VSWR/GAIN as fittness to select survivors, 
+             applies genetic operations (mutation,crossover), adds random individuals, and reruns
+             loop until you are satisfied with the results, then writes survivors to nec files for you to build.
+             
+
+
+-- A URL where users can report bugs.
+bug-reports: http://github.com/polyrod/xnec2c-gao/
+
+-- The license under which the package is released.
+-- license:
+author:             Maurizio Di Pietro
+maintainer:         dc1mdp@gmail.com
+
+-- A copyright notice.
+copyright: Copyright 2022 Maurizio Di Pietro DC1MDP. Program is provided "as is". Author is
+           not responsible for any havoc caused by the usage of this software. Use at own risk.
+category: hamradio
+extra-source-files: CHANGELOG.md
+
+executable xnec2c-gao
+    main-is:          Main.hs
+
+    -- Modules included in this executable, other than Main.
+    other-modules: Types
+                 , Utils
+                 , Options
+                 , GAOParser
+                 , Genotype
+                 , Phenotype
+                 , Genetics
+                 
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+    build-depends:
+        base ^>=4.15.1.0,
+        hinotify,
+        optparse-applicative,
+        megaparsec,
+        text,
+        mtl,
+        containers,
+        pretty-simple,
+        text-builder,
+        parser-combinators,
+        scientific,
+        filepath-bytestring,
+        bytestring,
+        process,
+        unix,
+        monad-loops,
+        random,
+        monadlist
+
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+    GHC-Options:         -O2  -threaded 
