@@ -1,4 +1,4 @@
-name: Convert PDF to Markdown
+name: PDF Readme
 
 on:
   push:
