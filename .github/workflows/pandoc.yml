@@ -14,6 +14,6 @@ jobs:
       - name: Pandoc Document Converter
         uses: Ender-events/pandoc@master
         with:
-          args: '-s -N --toc -t pdf -o README.pdf README.md metadata.yml'
+          args: '-s -N --toc -t latex  README.md metadata.yml -o README.pdf'
   
       
