@@ -51,6 +51,7 @@ jobs:
           mkdir -p .debpkg/DEBIAN
           echo -e "echo postinst" > .debpkg/DEBIAN/postinst
           chmod +x .debpkg/DEBIAN/postinst
+          echo "Github Ref: " ${{github.ref}}
       - uses: jiro4989/build-deb-action@v2
         with:
           package: xnec2c-gao
