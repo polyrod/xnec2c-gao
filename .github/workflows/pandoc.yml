@@ -1,0 +1,23 @@
+name: Pandoc Readme
+
+on: 
+  push:
+    branches : master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        run : echo 'building'
+        
+      
+      - uses: actions/checkout@v3
+      
+  
+      - uses: lothindir/pandoc-markdown-action@v0.1
+        with:
+            markdown: "rapport.md"
+            pdf: "Rapport"
+            template: "kate,monochrome"
+
