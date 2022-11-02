@@ -3,4 +3,5 @@ README.pdf
 *.nec
 *.gao
 *.csv
-.debpgk/
+.debpkg
+.debpkg/*
