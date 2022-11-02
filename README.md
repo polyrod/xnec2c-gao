@@ -1,11 +1,36 @@
 # Xnec2c-gao
 
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
+![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 
 ## What is Xnec2c-gao
 
 Xnec2c-gao is an external optimizer for the antenna modeling software [Xnec2c](https://www.xnec2c.org/) written by [Neoklis Kyriazis,
 5B4AZ](http://www.5b4az.org/). It uses an genetic algorithm to find solutions in a multidimensional search space.
+
+## Installing xnec2c-gao
+
+### Install .deb package
+
+To install  
+
+  * download the .deb package from [release page](https://github.com/polyrod/xnec2c-gao/releases).
+  * in your terminal run
+
+        $ sudo dpkg -i xnec2c-gao_<version>.deb
+      
+### Building from source
+
+To build from source  
+
+  * download the .tar.gz package from [release page](https://github.com/polyrod/xnec2c-gao/releases).
+  * install haskell via [ghcup](https://www.haskell.org/ghcup/)
+  * in your terminal
+
+        $ tar xzvf xnec2c-gao_<version>.tar.gz
+        $ cd xnec2c-gao
+        $ cabal build
+        $ sudo cabal install
 
 ## Why do we need an external optimizer for Xnec2c
 
