@@ -22,7 +22,7 @@ jobs:
             --toc
             -N
             -t pdf
-            Readme.md
+            README.md
             metadata.yaml
             -o README.pdf
 
