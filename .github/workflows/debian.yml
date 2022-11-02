@@ -36,8 +36,7 @@ jobs:
           cabal build --only-dependencies
           
           
-      - name: build_debian_package
-        id : debian_package
+      - name: prepare_debian_package
         run: |
           cabal build
           
@@ -55,22 +54,24 @@ jobs:
           echo "Github Ref: " ${{github.ref}}
       
       
-      - uses: jiro4989/build-deb-action@v2
+      - name: build_deb_package
+        id: debian_package
+        uses: jiro4989/build-deb-action@v2
         with:
-          package: xnec2c-gao
-          package_root: .debpkg
-          maintainer: Maurizio Di Pietro DC1MDP <dc1mdp@gmail.com>
-          version: ${{ github.ref }} # refs/tags/v*.*.*
-          arch: 'amd64'
-          depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
-          desc: 'An external optimizer for xnec2c based on genetic algorithm'
+            package: xnec2c-gao
+            package_root: .debpkg
+            maintainer: Maurizio Di Pietro DC1MDP <dc1mdp@gmail.com>
+            version: ${{ github.ref }} # refs/tags/v*.*.*
+            arch: 'amd64'
+            depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
+            desc: 'An external optimizer for xnec2c based on genetic algorithm'
       
-      
-      - uses: Shopify/upload-to-release@v1.0.1
+      - name: publish_debian_package
+        uses: Shopify/upload-to-release@v1.0.1
         with:
-          name: ${{steps.debian_package.file_name}}
-          path: ${{steps.debian_package.file_name}}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          content-type: application/vnd.debian.binary-package # Optional
+            name: ${{steps.debian_package.file_name}}
+            path: ${{steps.debian_package.file_name}}
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
+            content-type: application/vnd.debian.binary-package # Optional
 
 
