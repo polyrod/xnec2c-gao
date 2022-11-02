@@ -3,7 +3,7 @@ name: Build Deb Package
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
