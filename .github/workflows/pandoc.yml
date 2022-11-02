@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 1
     
     - name: Install Pdflatex
-      run: apt install texlive-latex-extra texlive-latx-base librsvg2-bin
+      run: sudo apt-get install texlive-latex-extra texlive-latx-base librsvg2-bin
 
     - name: Create .pdf
       uses: docker://pandoc/core:2.9
