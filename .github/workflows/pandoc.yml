@@ -5,7 +5,7 @@ on:
     paths:
     - '**.md'
 
-      jobs:
+jobs:
   convert_md: 
     runs-on: ubuntu-latest
     steps:
