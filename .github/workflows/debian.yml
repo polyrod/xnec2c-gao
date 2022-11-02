@@ -45,11 +45,12 @@ jobs:
           
           cabal install --install-method=copy --installdir=./.debpkg/usr/bin/
           cp -r examples/ ./.debpkg/usr/share/doc/xnec2c-gao/
+          cp README.md README.pdf ./.debpkg/usr/share/doc/xnec2c-gao/
           
 
           # create DEBIAN directory if you want to add other pre/post scripts
           mkdir -p .debpkg/DEBIAN
-          echo -e "echo postinst" > .debpkg/DEBIAN/postinst
+          echo -e "echo xnec2c-gao ready." > .debpkg/DEBIAN/postinst
           chmod +x .debpkg/DEBIAN/postinst
           echo "Github Ref: " ${{github.ref}}
       
