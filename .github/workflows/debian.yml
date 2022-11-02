@@ -39,7 +39,29 @@ jobs:
       - name: Build
         run: |
           cabal build
-          cabal sdist
+          
+          mkdir -p .debpkg/usr/bin
+          mkdir -p .debpkg/usr/share/doc/xnec2c-gao/
+          
+          cabal install --install-method=copy --installdir=./.debpkg/usr/bin/
+          cp -r examples/ ./.debpkg/usr/share/doc/xnec2c-gao/
+          
+
+          # create DEBIAN directory if you want to add other pre/post scripts
+          mkdir -p .debpkg/DEBIAN
+          echo -e "echo postinst" > .debpkg/DEBIAN/postinst
+          chmod +x .debpkg/DEBIAN/postinst
+      - uses: jiro4989/build-deb-action@v2
+        with:
+          package: xnec2c-gao
+          package_root: .debpkg
+          maintainer: Maurizio Di Pietro DC1MDP <dc1mdp@gmail.com>
+          version: ${{ github.ref }} # refs/tags/v*.*.*
+          arch: 'amd64'
+          depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
+          desc: 'An external optimizer for xnec2c based on genetic algorithm'
+
+
 
   publish:
     needs: [build]
@@ -47,4 +69,4 @@ jobs:
     environment: production
     steps:
       - name: publish
-        run: echo 'publishing'
+        run: ls -R .debpkg
