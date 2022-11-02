@@ -66,7 +66,7 @@ jobs:
           desc: 'An external optimizer for xnec2c based on genetic algorithm'
       
       
-      - uses: Shopify/upload-to-release@v1
+      - uses: Shopify/upload-to-release@v1.0.1
         with:
           name: ${{steps.debian_package.file_name}}
           path: ${{steps.debian_package.file_name}}
