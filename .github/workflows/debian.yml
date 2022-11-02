@@ -1,0 +1,2 @@
+- name: Debian Packer
+  uses: Nightwind-Developments/debian-packer@1.0.0
