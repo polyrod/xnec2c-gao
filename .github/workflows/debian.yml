@@ -36,7 +36,8 @@ jobs:
           cabal build --only-dependencies
           
           
-      - name: Build
+      - name: build_debian_package
+        id : debian_package
         run: |
           cabal build
           
@@ -52,6 +53,8 @@ jobs:
           echo -e "echo postinst" > .debpkg/DEBIAN/postinst
           chmod +x .debpkg/DEBIAN/postinst
           echo "Github Ref: " ${{github.ref}}
+      
+      
       - uses: jiro4989/build-deb-action@v2
         with:
           package: xnec2c-gao
@@ -61,13 +64,13 @@ jobs:
           arch: 'amd64'
           depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
           desc: 'An external optimizer for xnec2c based on genetic algorithm'
+      
+      
+      - uses: Shopify/upload-to-release@v1
+        with:
+          name: ${{steps.debian_package.file_name}}
+          path: ${{steps.debian_package.file_name}}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          content-type: application/vnd.debian.binary-package # Optional
 
 
-
-  publish:
-    needs: [build]
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: publish
-        run: ls -R .debpkg
