@@ -1,6 +1,7 @@
 # Xnec2c-gao
 
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
+![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 
 ## What is Xnec2c-gao
 
