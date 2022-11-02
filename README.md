@@ -214,5 +214,5 @@ xnec2c-gao will run for n generations and present you the evolved survivors, you
 or if you are satisfied quit the optimization in which case xnec2c-gao will write one .nec file for each survivor.
 The filename of the necfile will also contain the AVSWR calculated by xnec2c.
 
-$-- ### Example output listing
+$-- ##### Example output listing
 
