@@ -76,10 +76,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
-          name: xnec2c-gao
-          body: >
-            This release actually changes the fabric of the reality, so be careful 
-            while applying, as error in database migration, can irrecoverably wipe 
-            some laws of physics.  
+          name: xnec2c-gao_${{ github.ref }}
           gzip: folders
+          draft: true
+          prerelease: true
+          allow_override: true
           files: ${{steps.debian_package.outputs.file_name}}
