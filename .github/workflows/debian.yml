@@ -2,8 +2,6 @@ name: Build Deb Package
 
 on:
   push:
-    branches:
-      - master
     tags:
       - 'v*.*.*'
 
