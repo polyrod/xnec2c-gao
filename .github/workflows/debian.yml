@@ -78,7 +78,7 @@ jobs:
           tag: ${{ github.ref }}
           name: xnec2c-gao_${{ github.ref }}
           gzip: folders
-          draft: true
-          prerelease: true
+          draft: false
+          prerelease: false
           allow_override: true
           files: ${{steps.debian_package.outputs.file_name}}
