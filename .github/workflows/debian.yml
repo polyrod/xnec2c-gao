@@ -69,8 +69,8 @@ jobs:
       - name: publish_debian_package
         uses: Shopify/upload-to-release@v1.0.1
         with:
-            name: ${{steps.debian_package.file_name}}
-            path: ${{steps.debian_package.file_name}}
+            name: ${{steps.debian_package.outputs.file_name}}
+            path: ${{steps.debian_package.outputs.file_name}}
             repo-token: ${{ secrets.GITHUB_TOKEN }}
             content-type: application/vnd.debian.binary-package # Optional
 
