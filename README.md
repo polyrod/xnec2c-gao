@@ -96,7 +96,7 @@ The Syntax of a GSYM Card is:
 
     GSYM symbolname := [<low>...<high>]
 
-where \<low\> and \<high\> are floating point naumbers and low < high.
+where \<low\> and \<high\> are floating point numbers and low < high.
 
 So to check what radius gives best VSWR/GAIN one would replace the definition of radius from above from:
 
@@ -115,7 +115,6 @@ To vary the parameters defined in terms of SYM cards you can use the GSYM symbol
     GSYM  scale := [0,5...1,5]
     SYM   lambda := scale * vf * c / freq
 
-\newpage
 # From .gao file to .gao.nec files
 
 After you prepared your .gao file for your antenna model, you can invoke the optimizer.
