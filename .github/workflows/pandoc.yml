@@ -11,13 +11,9 @@ jobs:
       - name: build
         run : echo 'building'
         
-      
-      - uses: actions/checkout@v3
-      
-  
-      - uses: lothindir/pandoc-markdown-action@v0.1
+      - name: Pandoc Document Converter
+        uses: Ender-events/pandoc@master
         with:
-            markdown: "rapport.md"
-            pdf: "Rapport"
-            template: "kate,monochrome"
-
+          args: '-s -N --toc -t pdf -o README.pdf README.md metadata.yml'
+  
+      
