@@ -66,8 +66,20 @@ jobs:
             depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
             desc: 'An external optimizer for xnec2c based on genetic algorithm'
       
-      - name: publish_debian_package
-        uses: planet-code/upload-to-release-action@1.0.0
+#     - name: publish_debian_package
+#       uses: planet-code/upload-to-release-action@1.0.0
+#       with:
+#         token: ${{ secrets.GITHUB_TOKEN }}
+#         asset-path: ${{steps.debian_package.outputs.file_name}}
+
+      - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          asset-path: ${{steps.debian_package.outputs.file_name}}
+          tag: ${{ github.ref }}
+          name: xnec2c-gao
+          body: >
+            This release actually changes the fabric of the reality, so be careful 
+            while applying, as error in database migration, can irrecoverably wipe 
+            some laws of physics.  
+          gzip: folders
+          files: ${{steps.debian_package.outputs.file_name}}
