@@ -67,11 +67,7 @@ jobs:
             desc: 'An external optimizer for xnec2c based on genetic algorithm'
       
       - name: publish_debian_package
-        uses: Shopify/upload-to-release@v1.0.1
+        uses: planet-code/upload-to-release-action@1.0.0
         with:
-            name: ${{steps.debian_package.outputs.file_name}}
-            path: ${{steps.debian_package.outputs.file_name}}
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
-            content-type: application/vnd.debian.binary-package # Optional
-
-
+          token: ${{ secrets.GITHUB_TOKEN }}
+          asset-path: ${{steps.debian_package.outputs.file_name}}
