@@ -1,7 +1,3 @@
-name: Debian Packer
-uses: Nightwind-Developments/debian-packer@1.0.0
-
-
 on:
   push:
     branches:
@@ -12,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: build
-        echo 'building'
+        run : echo 'building'
 
   publish:
     needs: [build]
@@ -20,4 +16,4 @@ jobs:
     environment: production
     steps:
       - name: publish
-        echo 'publishing'
+        run: echo 'publishing'
