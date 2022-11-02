@@ -1,2 +1,23 @@
-- name: Debian Packer
-  uses: Nightwind-Developments/debian-packer@1.0.0
+name: Debian Packer
+uses: Nightwind-Developments/debian-packer@1.0.0
+
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        echo 'building'
+
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: publish
+        echo 'publishing'
