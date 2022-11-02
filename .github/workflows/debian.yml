@@ -63,20 +63,14 @@ jobs:
             maintainer: Maurizio Di Pietro DC1MDP <dc1mdp@gmail.com>
             version: ${{ github.ref }} # refs/tags/v*.*.*
             arch: 'amd64'
-            depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11)'
+            depends: 'libc6 (>= 2.34), libgmp10 (>= 2:6.2.1+dfsg1), libnuma1 (>= 2.0.11), xnec2c (>= 1:4.4)'
             desc: 'An external optimizer for xnec2c based on genetic algorithm'
       
-#     - name: publish_debian_package
-#       uses: planet-code/upload-to-release-action@1.0.0
-#       with:
-#         token: ${{ secrets.GITHUB_TOKEN }}
-#         asset-path: ${{steps.debian_package.outputs.file_name}}
-
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
-          name: xnec2c-gao_${{ github.ref }}
+          name: xnec2c-gao
           gzip: folders
           draft: false
           prerelease: false
