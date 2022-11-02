@@ -16,18 +16,10 @@ jobs:
         fetch-depth: 1
     
     - name: Install Pdflatex
-      run: sudo apt-get install texlive-latex-extra texlive-latex-base librsvg2-bin
+      run: sudo apt-get install texlive-latex-extra texlive-latex-base librsvg2-bin pandoc
 
     - name: Create .pdf
-      uses: docker://pandoc/core:2.9
-      with:
-        args: >-  # allows you to break string into multiple lines
-            --toc
-            -N
-            -t pdf
-            README.md
-            metadata.yaml
-            -o README.pdf
+      run : pandoc --toc -N -t pdf README.md metadata.yaml -o README.pdf
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v1.6.1
