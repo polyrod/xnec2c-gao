@@ -3,6 +3,9 @@ name: Haskell CI
 on:
   push:
     branches: [ "master" ]
+    paths:
+        - '**.hs'
+
   pull_request:
     branches: [ "master" ]
 
