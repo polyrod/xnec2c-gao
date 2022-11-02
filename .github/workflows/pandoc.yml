@@ -5,7 +5,7 @@ on:
     paths:
     - '**.md'
 
-jobs:
+      jobs:
   convert_md: 
     runs-on: ubuntu-latest
     steps:
@@ -15,12 +15,17 @@ jobs:
       with:
         fetch-depth: 1
     
-    - name: Create .pdfs
-      uses: scottypate/md-to-pdf@v0.1.1
-      env: 
-        # Use this parameter to determine where the generated .pdf(s) will be stored.
-        PDF_DIR: '.'
-      
+    - name: Create .pdf
+      uses: docker://pandoc/core:2.9
+      with:
+        args: >-  # allows you to break string into multiple lines
+            --toc
+            -N
+            -t pdf
+            Readme.md
+            metadata.yaml
+            -o README.pdf
+
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v1.6.1
       env:
