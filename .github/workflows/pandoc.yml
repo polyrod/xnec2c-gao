@@ -29,5 +29,5 @@ jobs:
         COMMIT_MESSAGE: Add .pdf files.
         PULL_REQUEST_TITLE: Add .pdf files.
         PULL_REQUEST_BRANCH: pdf-add
-        PULL_REQUEST_BODY: :wave: Here are the .pdf files you requested.
+        PULL_REQUEST_BODY: Here are the .pdf files you requested.
         PULL_REQUEST_REVIEWERS: polyrod
