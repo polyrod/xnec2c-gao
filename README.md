@@ -1,5 +1,6 @@
 # Xnec2c-gao
 
+![](https://img.shields.io/github/v/release/polyrod/xnec2c-gao?label=xnec2c-gao)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
