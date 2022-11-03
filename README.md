@@ -4,6 +4,21 @@
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
 <!--ts-->
+* [Xnec2c-gao](#xnec2c-gao)
+   * [What is Xnec2c-gao](#what-is-xnec2c-gao)
+   * [Installing xnec2c-gao](#installing-xnec2c-gao)
+      * [Install .deb package](#install-deb-package)
+      * [Building from source](#building-from-source)
+   * [Why do we need an external optimizer for Xnec2c](#why-do-we-need-an-external-optimizer-for-xnec2c)
+* [From .nec to .gao file](#from-nec-to-gao-file)
+   * [SYM Card](#sym-card)
+      * [Using SYM Card symbols in your GW Cards](#using-sym-card-symbols-in-your-gw-cards)
+   * [GSYM Card](#gsym-card)
+      * [Using GSYM Card symbols to "modulate" SYM Card symbols](#using-gsym-card-symbols-to-modulate-sym-card-symbols)
+* [From .gao file to .gao.nec files](#from-gao-file-to-gaonec-files)
+   * [Running your optimization](#running-your-optimization)
+   * [Fixing errors in gao file](#fixing-errors-in-gao-file)
+   * [Output of xnec2c-gao](#output-of-xnec2c-gao)
 <!--te-->
 ## What is Xnec2c-gao
 
