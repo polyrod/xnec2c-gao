@@ -139,7 +139,7 @@ otherCard = gaodbg "Other" $ do
 
 identifier :: Parser Text
 identifier = do
-  t <- lexeme $ some lowerChar
+  t <- lexeme ((:) <$> letterChar <*> some (choice [alphaNumChar,single '_']))
   return $ T.pack t
 
 range :: Parser Range
@@ -153,8 +153,7 @@ range = do
 
 literal = Lit <$> lexeme signedNum
 
-variable = Var . T.pack <$> lexeme ((:) <$> letterChar <*> many alphaNumChar)
-
+variable = Var <$> identifier
 parens p = between (symbol "(") (symbol ")") $ lexeme p
 
 term :: Parser Expr
@@ -173,7 +172,7 @@ optable =
       prefix "SQRT" (UnOp Sqrt),
       prefix "-" (UnOp Negate)
     ],
-    [binary "^" (BiOp Exp)],
+    [ binary "^" (BiOp Exp)],
     [ binary "*" (BiOp Mult),
       binary "/" (BiOp Div)
     ],
