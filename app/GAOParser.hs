@@ -172,7 +172,7 @@ optable =
       prefix "SQRT" (UnOp Sqrt),
       prefix "-" (UnOp Negate)
     ],
-    [binary "^" (BiOp Exp)],
+    [ binary "^" (BiOp Exp)],
     [ binary "*" (BiOp Mult),
       binary "/" (BiOp Div)
     ],
