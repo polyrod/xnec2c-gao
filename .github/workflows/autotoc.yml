@@ -1,3 +1,5 @@
+name: AutoToc
+
 on:
   push:
     branches: [master]
