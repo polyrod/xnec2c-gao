@@ -3,8 +3,6 @@
 
 module Phenotype where
 
---import Utils
-
 import Control.Concurrent
 import Control.Monad.ListM
 import Control.Monad.Loops
@@ -18,17 +16,16 @@ import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Data.Text.Lazy (toStrict)
 import Data.These
+import GHC.Float
 import System.FilePath.Posix.ByteString
 import System.INotify
 import System.Posix.Directory.ByteString
-import System.Process
+import System.Process (system)
 import Text.Builder
-import Text.Pretty.Simple
 import Types
 import Utils
-import GHC.Float
+
 type Env = Map Symbol Float
 
 genPhenotypes :: GAO ()
@@ -36,8 +33,6 @@ genPhenotypes = do
   s <- get
   pts <- mapM geno2pheno $ generation s
   put $ s {generation = pts}
-
---printState
 
 geno2pheno :: Individual -> GAO Individual
 geno2pheno (Individual g Nothing env) = do
@@ -53,7 +48,7 @@ geno2pheno (Individual g Nothing env) = do
       e' <- fst <$> f e ce
       cf <- snd <$> f e ce
       pure (e', (i, cf))
-geno2pheno i@(Individual g _ env) = pure i
+geno2pheno i = pure i
 
 evalCard :: Env -> Card Expr -> GAO (Env, Card Float)
 evalCard env (Card (SYM s e)) = do
@@ -87,10 +82,10 @@ extend :: Env -> Symbol -> Float -> Env
 extend e s v = M.insert s v e
 
 eval :: Env -> Expr -> Float
-eval env (Lit x) = x
-eval env (Var x) = case M.lookup x env of
-  Nothing -> error $ "Undefined Variable" ++ show x
-  Just v -> v
+eval _ (Lit l) = l
+eval env (Var v) = case M.lookup v env of
+  Nothing -> error $ "Undefined Variable" ++ show v
+  Just var -> var
 eval env (BiOp Add e1 e2) = eval env e1 + eval env e2
 eval env (BiOp Sub e1 e2) = eval env e1 - eval env e2
 eval env (BiOp Mult e1 e2) = eval env e1 * eval env e2
@@ -110,8 +105,10 @@ renderDeck bs cs = do
       then Phenotype $ This p
       else Phenotype $ These p ppb
 
+tab :: Builder
 tab = char '\t'
 
+nl :: Builder
 nl = char '\n'
 
 renderCard :: Maybe Band -> Card Float -> Text
@@ -138,33 +135,37 @@ renderCard _ (Card (SYM _ _)) = ""
 renderCard _ (Card (GSYM _ _)) = ""
 renderCard _ (Card (BND _)) = ""
 renderCard Nothing (Card (FR t)) = run $ padr (string "FR") <> tab <> text (T.concat $ intersperse "\t" $ T.words t) <> nl
-renderCard (Just b) (Card (FR t)) = ""
-renderCard Nothing (Card (EN)) = run $ padr (string "EN") <>nl
+renderCard (Just _) (Card (FR _)) = ""
+renderCard Nothing (Card (EN)) = run $ padr (string "EN") <> nl
 renderCard (Just b) (Card (EN)) =
   let low = fst $ width b
       high = snd $ width b
       stps = steps b
       delta = (high - low) / fromIntegral stps
-  in run $
-      padr (string "FR") <> tab
-        <> padl (decimal 0)
-        <> tab
-        <> padl (decimal stps)
-        <> tab
-        <> decimal 0
-        <> tab
-        <> decimal 0
-        <> tab
-        <> toText low
-        <> tab
-        <> toText delta
-        <> tab
-        <> toText high
-        <> nl <> padr (string "EN") <> nl
+   in run $
+        padr (string "FR") <> tab
+          <> padl (decimal (0 :: Int))
+          <> tab
+          <> padl (decimal stps)
+          <> tab
+          <> decimal (0 :: Int)
+          <> tab
+          <> decimal (0 :: Int)
+          <> tab
+          <> toText low
+          <> tab
+          <> toText delta
+          <> tab
+          <> toText high
+          <> nl
+          <> padr (string "EN")
+          <> nl
 renderCard _ (Card (Other t1 t2)) = run $ padr (text t1) <> tab <> text (T.concat $ intersperse "\t" $ T.words t2) <> nl
 
+padr :: Builder -> Builder
 padr = padFromRight 3 ' '
 
+padl :: Builder -> Builder
 padl = padFromLeft 11 ' '
 
 toText :: Show a => a -> Builder
@@ -172,7 +173,7 @@ toText a = padl $ text $ T.replace "." "," $ T.pack $ show a
 
 renderFitness :: Text -> Fitness -> Text
 renderFitness _ None = ""
-renderFitness lab (Fitness swr gain fbr) = run $ tab <>padl (text lab) <> tab <> string "VSWR " <> padl (fixedDouble 4 $ float2Double swr) <> tab <> string "GAIN " <> padl (fixedDouble 2 $ float2Double gain) <> tab <> string "FBR " <> padl (fixedDouble 2 $ float2Double fbr) 
+renderFitness lab (Fitness swr gain fbr) = run $ tab <> padl (text lab) <> tab <> string "VSWR " <> padl (fixedDouble 4 $ float2Double swr) <> tab <> string "GAIN " <> padl (fixedDouble 2 $ float2Double gain) <> tab <> string "FBR " <> padl (fixedDouble 2 $ float2Double fbr)
 
 evalPhenotypes :: GAO ()
 evalPhenotypes = do
@@ -183,11 +184,13 @@ evalPhenotypes = do
     mapM
       ( \(idx, i) -> do
           liftIO $
-            T.putStrLn $ run $ nl <> tab <> string "Running Phenotype number "
-                                <> (decimal idx)
-                                <> string " of "
-                                <> (decimal ptc)
-                                <> nl
+            T.putStrLn $
+              run $
+                nl <> tab <> string "Running Phenotype number "
+                  <> (decimal (idx :: Int))
+                  <> string " of "
+                  <> (decimal ptc)
+                  <> nl
           i' <- runPhenotype i
           liftIO $ printGenotype i'
           liftIO $ T.putStrLn "\n"
@@ -199,7 +202,7 @@ evalPhenotypes = do
           return i'
       )
       $ zip [1 ..] $ generation s
-  modify (\s -> s {generation = g', genNum = genNum s + 1, done = genNum s + 1 > genCount s})
+  modify (\u -> u {generation = g', genNum = genNum u + 1, done = genNum u + 1 > genCount u})
 
 runPhenotype :: Individual -> GAO Individual
 runPhenotype i = do
@@ -207,7 +210,6 @@ runPhenotype i = do
   cwd <- liftIO getWorkingDirectory
   let necfile = cwd </> takeBaseName (B.pack $ gaoFile $ opts s) <.> "nec"
   startXnec2c necfile
-
 
   let pt@(Phenotype ps) = fromJust $ phenotype i
   i' <-
@@ -220,7 +222,7 @@ runPhenotype i = do
           brm <-
             liftIO $
               mapM
-                ( \(b, (PhenotypeData d f)) -> do
+                ( \(b, (PhenotypeData d _)) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
@@ -230,7 +232,7 @@ runPhenotype i = do
           brm <-
             liftIO $
               mapM
-                ( \(b, (PhenotypeData d f)) -> do
+                ( \(b, (PhenotypeData d _)) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
@@ -246,13 +248,16 @@ startXnec2c necfile = do
   unless (isJust $ xnec2c s) $ do
     let cmd = "sleep 2 && xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
     tid <- liftIO $ forkIO $ void $ system cmd
-    modify (\s -> s {xnec2c = Just tid})
+    modify (\u -> u {xnec2c = Just tid})
 
 printGenotype :: Individual -> IO ()
 printGenotype i = do
-  T.putStr $ run $  tab <> string "Genotype is <|" 
-                 <> (foldl (<>) mempty $ fmap (\(k, v) -> text k <> ": " <> fixedDouble 4  (float2Double v) <> "|") $ M.assocs $ let Genotype g = genotype i in g)
-                 <> string ">" <> nl
+  T.putStr $
+    run $
+      tab <> string "Genotype is <|"
+        <> (foldl (<>) mempty $ fmap (\(k, v) -> text k <> ": " <> fixedDouble 4 (float2Double v) <> "|") $ M.assocs $ let Genotype g = genotype i in g)
+        <> string ">"
+        <> nl
 
 runWithXnec :: RawFilePath -> Text -> IO Fitness
 runWithXnec necfile bpheno = do

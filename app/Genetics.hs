@@ -12,41 +12,28 @@ import System.Random
 import Types
 
 
-score :: Phenotype -> Float
-score (Phenotype (This (PhenotypeData _ (Fitness vswr gain fbr)))) = calc vswr gain fbr
-score (Phenotype (This (PhenotypeData _ (None)))) = 0
-score (Phenotype (That bmd)) = let Fitness a b c = foldr (<>) None $ fmap fitness bmd in calc a b c 
-score (Phenotype (These frd bmd)) = case (foldr (<>) None $ fmap fitness bmd) of 
-                                      Fitness a b c -> calc a b c
-                                      None -> 0
-
-calc a b c = 1/a + b + c
-
-                                           
-
 selectSurvivors :: GAO ()
 selectSurvivors = do
   s <- get
   let selector = if selectDistinct $ opts s then nub else id
       g = generation s
       gc = fromIntegral $ length g
-      sc = floor $ gc * 0.6
+      sc = floor $ gc * (0.6 :: Double)
       g' =
         take sc $
           sortBy
             ( \i i' ->
-                let getScore x =
-                      if (score $ fromJust (phenotype x)) < 0
+                let getScore ind =
+                      if (score $ fromJust (phenotype ind)) < 0
                         then 100000
-                        else score $ fromJust (phenotype x)
+                        else score $ fromJust (phenotype ind)
                  in compare (getScore i) (getScore i')
             )
             $ selector g
-      dupmap = zipWith (\a b -> floor $ fromIntegral (length g' - a) / 5.0) [1 ..] g'
+      dupmap = zipWith (\a _ -> floor $ fromIntegral (length g' - a) / (5.0 :: Double)) [1 ..] g'
       g'' = concat $ zipWith replicate dupmap g'
-  modify (\s -> s {generation = g''})
-  liftIO $ mapM (print . score . fromJust . phenotype) g''
-  pure ()
+  modify (\u -> u {generation = g''})
+  liftIO $ mapM_ (print . score . fromJust . phenotype) g''
 
 applyGenOperations :: GAO ()
 applyGenOperations = do
@@ -57,12 +44,11 @@ applyGenOperations = do
 -- TODO clamp,crossover
 genetics :: Individual -> GAO Individual
 genetics i = do
-  g <- gets generation
   mutate i
   where
     crossover = id
-    mutate i = do
-      let Genotype gtm = genotype i
+    mutate ind = do
+      let Genotype gtm = genotype ind
       gtm' <-
         liftIO $
           mapM
@@ -75,7 +61,7 @@ genetics i = do
                     else v
             )
             gtm
-      return $ i {genotype = Genotype gtm', phenotype = Nothing, env = M.empty}
+      return $ i {genotype = Genotype gtm', phenotype = Nothing, environment = M.empty}
 
 genNextGen :: GAO ()
 genNextGen = do
@@ -87,4 +73,16 @@ genNextGen = do
     if delta > 0
       then (generation s <>) <$> generateNindividuals delta
       else pure $ take ps $ generation s
-  modify (\s -> s {generation = gts})
+  modify (\u -> u {generation = gts})
+
+score :: Phenotype -> Float
+score (Phenotype (This (PhenotypeData _ (Fitness vswr gain fbr)))) = calc vswr gain fbr
+score (Phenotype (This (PhenotypeData _ (None)))) = 0
+score (Phenotype (That bmd)) = let Fitness a b c = foldr (<>) None $ fmap fitness bmd in calc a b c
+score (Phenotype (These _ bmd)) = case (foldr (<>) None $ fmap fitness bmd) of
+  Fitness a b c -> calc a b c
+  None -> 0
+
+calc :: Fractional a => a -> a -> a -> a
+calc a b c = 1 / a + b + c
+
