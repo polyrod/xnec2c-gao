@@ -226,7 +226,6 @@ gaodbg str p = do
   if verbosity (opts s) > 1
     then dbg str p
     else p
-
 --
 -- @since 5.0.0
 cscientific ::

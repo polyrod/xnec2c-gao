@@ -16,9 +16,7 @@ import Control.Monad.State
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Text.Pretty.Simple
+import Data.These
 
 newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
   deriving (Eq, Show, Functor, Foldable, Traversable)
@@ -65,6 +63,7 @@ data GAOOpts = GAOOpts
   }
   deriving (Show)
 
+defaultGAOOpts :: GAOOpts
 defaultGAOOpts = GAOOpts "" 0 False 20 10
 
 data GAOEnv = GAOEnv
@@ -75,11 +74,13 @@ data GAOEnv = GAOEnv
     genCount :: Int,
     opts :: GAOOpts,
     gaomodel :: GAOModel,
+    bands :: [Band],
     xnec2c :: Maybe ThreadId
   }
   deriving (Show)
 
-defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) Nothing
+defaultGAOEnv :: GAOEnv
+defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing
 
 newtype GAO a = GAO {runGAO :: GAOEnv -> IO (a, GAOEnv)}
   deriving
