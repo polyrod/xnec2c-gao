@@ -63,7 +63,9 @@ card = do
       ceCard,
       symCard,
       gsymCard,
+      bndCard,
       gwCard,
+      enCard,
       geCard,
       frCard,
       ldCard,
@@ -71,7 +73,6 @@ card = do
       exCard,
       ekCard,
       rpCard,
-      enCard,
       symCard,
       gsymCard,
       gaoCard,
@@ -82,6 +83,7 @@ cmCard,
   ceCard,
   symCard,
   gsymCard,
+  bndCard,
   gwCard,
   geCard,
   frCard,
@@ -122,15 +124,31 @@ gwCard = do
   [epx, epy, epz] <- count 3 $ lexeme expr
   r <- lexeme expr
   return $ Card $ GW ct sc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r)
+bndCard = gaodbg "bndCard" $ do
+  lexeme $ symbol "BND"
+  i <- T.pack <$> lexeme (some alphaNumChar)
+  w <- do
+    l <- toRealFloat <$> lexeme cscientific
+    h <- toRealFloat <$> lexeme cscientific
+    pure (l,h)
+  Card . BND . Band i w  <$> L.decimal 
+
 geCard = otherCard
-frCard = otherCard
+frCard = gaodbg "FR" $ do
+  lexeme $ symbol "FR"
+  t <- some printChar
+  return $ Card $ FR $ T.pack t
 ldCard = otherCard
 gnCard = otherCard
 exCard = otherCard
 ekCard = otherCard
 rpCard = otherCard
 
-enCard = otherCard
+enCard = gaodbg "enCard" $ do
+  lexeme $ symbol "EN"
+  _ <- lexeme $ many printChar
+  return $ Card $ EN
+
 
 otherCard = gaodbg "Other" $ do
   ct <- lexeme $ some alphaNumChar

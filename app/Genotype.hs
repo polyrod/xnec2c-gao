@@ -8,7 +8,8 @@ import Types
 
 genInitGenotypes = do
   proto <- extractPrototypeFromModel
-  modify (\s -> s {prototype = proto})
+  bs <- extractBandsFromModel
+  modify (\s -> s {prototype = proto , bands = bs})
   s <- get
   let ps = popSize $ opts s
   gts <- generateNindividuals ps
@@ -17,7 +18,7 @@ genInitGenotypes = do
 generateNindividuals :: Int -> GAO [Individual]
 generateNindividuals n = do
   s <- get
-  fmap (\gt -> Individual gt Nothing M.empty Nothing) <$> replicateM n proto2geno
+  fmap (\gt -> Individual gt Nothing M.empty) <$> replicateM n proto2geno
 
 extractPrototypeFromModel :: GAO (Genotype Range)
 extractPrototypeFromModel = do
@@ -33,6 +34,12 @@ extractPrototypeFromModel = do
                 _ -> False
             )
             cs
+
+extractBandsFromModel :: GAO [Band]
+extractBandsFromModel = do
+  s <- get
+  let (GAOModel cs) = gaomodel s
+  pure $ [b| c <- filter (\(Card ct) -> case ct of BND _ -> True ; _ -> False) $ map snd cs , let (Card (BND b)) = c]
 
 proto2geno :: GAO (Genotype Gene)
 proto2geno = do

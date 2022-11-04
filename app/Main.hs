@@ -67,18 +67,18 @@ askProceed = do
 
 outputResult = do
   s <- get
-  let survivors = nub $ filter (isJust . score) $ generation s
+  let survivors = nub $ filter (\i -> isJust (phenotype i) && (hasFitness . fromJust . phenotype) i) $ generation s
   mapM_ toFile $ zip [1 ..] survivors
   liftIO $ killThread $ fromJust $ xnec2c s
-  pPrint s
 
 toFile :: (Int, Individual) -> GAO ()
 toFile (n, i) = do
   s <- get
-  let fn =
+  let (Fitness vswr gain fbr) = getFitness $ fromJust $ phenotype i
+      fn =
         gaoFile (opts s) ++ "_" ++ show n
           ++ "_[AVSVR:"
-          ++ show (fromJust $ score i)
+          ++ show vswr
           ++ "].nec"
-      p = let Phenotype t = fromJust $ phenotype i in t
+      p = let t = fromJust $ phenotype i in outputPhenotype t
   liftIO $ T.writeFile fn p

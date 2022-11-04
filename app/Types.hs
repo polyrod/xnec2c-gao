@@ -26,7 +26,23 @@ newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
 emptyGenotype :: Genotype a
 emptyGenotype = Genotype M.empty
 
-newtype Phenotype = Phenotype {getPhenotype :: Text}
+data Fitness = None | Fitness Float Float Float
+  deriving (Eq, Show)
+
+instance Monoid Fitness where
+  mempty = None
+
+instance Semigroup Fitness where
+ (<>) None None = None
+ (<>) None a = a
+ (<>) a None = a 
+ (<>) (Fitness a b c) (Fitness a' b' c') = Fitness (a+a') (b+b') (c+c')
+
+data PhenotypeData = PhenotypeData { data_ :: Text , fitness :: Fitness}
+  deriving (Eq, Show)
+
+data Phenotype = Phenotype 
+  { getPhenotype :: These PhenotypeData (Map Band PhenotypeData) }
   deriving (Eq, Show)
 
 type Gene = Float
@@ -36,8 +52,7 @@ type Range = (Float, Float)
 data Individual = Individual
   { genotype :: Genotype Gene,
     phenotype :: Maybe Phenotype,
-    env :: Map Symbol Float,
-    score :: Maybe Float
+    env :: Map Symbol Float
   }
   deriving (Eq, Show)
 
@@ -97,7 +112,7 @@ data CardType a
   | CE Text
   | GW CardTag SegmentCount (Point3 a) (Point3 a) (Radius a)
   | GE GroundType
-  | FR
+  | FR Text
   | LD
   | GN
   | EX ExType
@@ -107,8 +122,15 @@ data CardType a
   | SYM Symbol a
   | GSYM Symbol Range
   | GAOP
+  | BND Band 
   | Other Text Text
   deriving (Show)
+
+data Band = Band 
+  { ident :: Text
+  , width :: Range
+  , steps :: Int
+  } deriving (Eq,Ord,Show)
 
 type Symbol = Text
 
