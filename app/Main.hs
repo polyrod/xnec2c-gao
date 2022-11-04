@@ -8,20 +8,16 @@ import Control.Monad.IO.Class
 import Control.Monad.State
 import Data.Char
 import Data.List
-import qualified Data.Map as M
 import Data.Maybe
 import qualified Data.Text.IO as T
-import System.INotify
+import GAOParser
+import Genetics
+import Genotype
+import Options
+import Phenotype
 import System.IO
-import Text.Pretty.Simple
-
 import Types
 import Utils
-import Options
-import GAOParser
-import Genotype
-import Phenotype
-import Genetics
 
 main :: IO ()
 main = do
@@ -44,6 +40,7 @@ goGAO = do
   genNextGen
   rerun
 
+rerun :: GAO ()
 rerun = do
   s <- get
   if done s
@@ -53,7 +50,7 @@ rerun = do
 askProceed :: GAO ()
 askProceed = do
   s <- get
-  a <- liftIO $ do 
+  a <- liftIO $ do
     hSetBuffering stdin NoBuffering
     putStrLn $ "Are you satisfied and want to [Q]uit or [P]roceed for another " ++ show (initGenCount $ opts s) ++ " generations ?"
     a <- liftIO getChar
@@ -62,23 +59,24 @@ askProceed = do
     return a
   case toLower a of
     'q' -> pure ()
-    'p' -> modify (\s -> s {genCount = genCount s + initGenCount (opts s)}) >> goGAO
+    'p' -> modify (\u -> u {genCount = genCount u + initGenCount (opts u)}) >> goGAO
     _ -> askProceed
 
+outputResult :: GAO ()
 outputResult = do
   s <- get
-  let survivors = nub $ filter (isJust . score) $ generation s
+  let survivors = nub $ filter (\i -> isJust (phenotype i) && (hasFitness . fromJust . phenotype) i) $ generation s
   mapM_ toFile $ zip [1 ..] survivors
   liftIO $ killThread $ fromJust $ xnec2c s
-  pPrint s
 
 toFile :: (Int, Individual) -> GAO ()
 toFile (n, i) = do
   s <- get
-  let fn =
+  let (Fitness vswr _ _) = getFitness $ fromJust $ phenotype i
+      fn =
         gaoFile (opts s) ++ "_" ++ show n
           ++ "_[AVSVR:"
-          ++ show (fromJust $ score i)
+          ++ show vswr
           ++ "].nec"
-      p = let Phenotype t = fromJust $ phenotype i in t
+      p = let t = fromJust $ phenotype i in outputPhenotype t
   liftIO $ T.writeFile fn p

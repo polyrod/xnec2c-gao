@@ -6,10 +6,10 @@ where
 
 import Control.Monad.IO.Class
 import Control.Monad.State
-import Data.Semigroup ((<>))
 import Options.Applicative
 import Types
 
+gaoopts :: Parser GAOOpts
 gaoopts =
   GAOOpts
     <$> strOption
@@ -54,10 +54,10 @@ gaoopts =
 
 parseOptions :: GAO ()
 parseOptions = do
-  gopts <- liftIO $ execParser opts
+  gopts <- liftIO $ execParser lopts
   modify (\s -> s {opts = gopts, genCount = initGenCount gopts})
   where
-    opts =
+    lopts =
       info
         (gaoopts <**> helper)
         ( fullDesc

@@ -16,9 +16,7 @@ import Control.Monad.State
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Text (Text)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Text.Pretty.Simple
+import Data.These
 
 newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
   deriving (Eq, Show, Functor, Foldable, Traversable)
@@ -26,7 +24,23 @@ newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
 emptyGenotype :: Genotype a
 emptyGenotype = Genotype M.empty
 
-newtype Phenotype = Phenotype {getPhenotype :: Text}
+data Fitness = None | Fitness Float Float Float
+  deriving (Eq, Show)
+
+instance Monoid Fitness where
+  mempty = None
+
+instance Semigroup Fitness where
+  (<>) None None = None
+  (<>) None a = a
+  (<>) a None = a
+  (<>) (Fitness a b c) (Fitness a' b' c') = Fitness (a + a') (b + b') (c + c')
+
+data PhenotypeData = PhenotypeData {data_ :: Text, fitness :: Fitness}
+  deriving (Eq, Show)
+
+newtype Phenotype = Phenotype
+  {getPhenotype :: These PhenotypeData (Map Band PhenotypeData)}
   deriving (Eq, Show)
 
 type Gene = Float
@@ -36,8 +50,7 @@ type Range = (Float, Float)
 data Individual = Individual
   { genotype :: Genotype Gene,
     phenotype :: Maybe Phenotype,
-    env :: Map Symbol Float,
-    score :: Maybe Float
+    environment :: Map Symbol Float
   }
   deriving (Eq, Show)
 
@@ -50,6 +63,7 @@ data GAOOpts = GAOOpts
   }
   deriving (Show)
 
+defaultGAOOpts :: GAOOpts
 defaultGAOOpts = GAOOpts "" 0 False 20 10
 
 data GAOEnv = GAOEnv
@@ -60,11 +74,13 @@ data GAOEnv = GAOEnv
     genCount :: Int,
     opts :: GAOOpts,
     gaomodel :: GAOModel,
+    bands :: [Band],
     xnec2c :: Maybe ThreadId
   }
   deriving (Show)
 
-defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) Nothing
+defaultGAOEnv :: GAOEnv
+defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing
 
 newtype GAO a = GAO {runGAO :: GAOEnv -> IO (a, GAOEnv)}
   deriving
@@ -97,7 +113,7 @@ data CardType a
   | CE Text
   | GW CardTag SegmentCount (Point3 a) (Point3 a) (Radius a)
   | GE GroundType
-  | FR
+  | FR Text
   | LD
   | GN
   | EX ExType
@@ -107,8 +123,16 @@ data CardType a
   | SYM Symbol a
   | GSYM Symbol Range
   | GAOP
+  | BND Band
   | Other Text Text
   deriving (Show)
+
+data Band = Band
+  { ident :: Text,
+    width :: Range,
+    steps :: Int
+  }
+  deriving (Eq, Ord, Show)
 
 type Symbol = Text
 
