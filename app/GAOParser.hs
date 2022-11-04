@@ -184,8 +184,10 @@ term = do
       literal
     ]
 
+expr :: Parser Expr
 expr = makeExprParser term optable
 
+optable :: [[Operator Parser Expr]]
 optable =
   [ [ prefix "SIN" (UnOp Sin),
       prefix "COS" (UnOp Cos),
