@@ -136,8 +136,8 @@ renderCard _ (Card (GSYM _ _)) = ""
 renderCard _ (Card (BND _)) = ""
 renderCard Nothing (Card (FR t)) = run $ padr (string "FR") <> tab <> text (T.concat $ intersperse "\t" $ T.words t) <> nl
 renderCard (Just _) (Card (FR _)) = ""
-renderCard Nothing (Card (EN)) = run $ padr (string "EN") <> nl
-renderCard (Just b) (Card (EN)) =
+renderCard Nothing (Card EN) = run $ padr (string "EN") <> nl
+renderCard (Just b) (Card EN) =
   let low = fst $ width b
       high = snd $ width b
       stps = steps b
@@ -187,17 +187,17 @@ evalPhenotypes = do
             T.putStrLn $
               run $
                 nl <> tab <> string "Running Phenotype number "
-                  <> (decimal (idx :: Int))
+                  <> decimal (idx :: Int)
                   <> string " of "
-                  <> (decimal ptc)
+                  <> decimal ptc
                   <> nl
           i' <- runPhenotype i
           liftIO $ printGenotype i'
           liftIO $ T.putStrLn "\n"
           liftIO $ case getPhenotype $ fromJust $ phenotype i' of
             This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
-            That bpm -> mapM_ (\((Band bi _ _), (PhenotypeData _ f)) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
-            These _ bpm -> mapM_ (\((Band bi _ _), (PhenotypeData _ f)) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
+            That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
+            These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
           liftIO $ T.putStrLn "\n\n\n"
           return i'
       )
@@ -205,14 +205,14 @@ evalPhenotypes = do
   modify (\u -> u {generation = g', genNum = genNum u + 1, done = genNum u + 1 > genCount u})
 
 runPhenotype :: Individual -> GAO Individual
-runPhenotype i = do
-  s <- get
-  cwd <- liftIO getWorkingDirectory
-  let necfile = cwd </> takeBaseName (B.pack $ gaoFile $ opts s) <.> "nec"
-  startXnec2c necfile
+runPhenotype i =
+  do
+    s <- get
+    cwd <- liftIO getWorkingDirectory
+    let necfile = cwd </> takeBaseName (B.pack $ gaoFile $ opts s) <.> "nec"
+    startXnec2c necfile
 
-  let pt@(Phenotype ps) = fromJust $ phenotype i
-  i' <-
+    let pt@(Phenotype ps) = fromJust $ phenotype i
     if not $ hasFitness pt
       then case ps of
         This p -> liftIO $ do
@@ -222,7 +222,7 @@ runPhenotype i = do
           brm <-
             liftIO $
               mapM
-                ( \(b, (PhenotypeData d _)) -> do
+                ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
@@ -232,15 +232,13 @@ runPhenotype i = do
           brm <-
             liftIO $
               mapM
-                ( \(b, (PhenotypeData d _)) -> do
+                ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
                 $ M.assocs bdm
           pure $ i {phenotype = Just $ Phenotype $ These p $ M.fromList brm}
       else pure i
-
-  return i'
 
 startXnec2c :: RawFilePath -> GAO ()
 startXnec2c necfile = do
@@ -255,14 +253,14 @@ printGenotype i = do
   T.putStr $
     run $
       tab <> string "Genotype is <|"
-        <> (foldl (<>) mempty $ fmap (\(k, v) -> text k <> ": " <> fixedDouble 4 (float2Double v) <> "|") $ M.assocs $ let Genotype g = genotype i in g)
+        <> foldl (<>) mempty (fmap (\(k, v) -> text k <> ": " <> fixedDouble 4 (float2Double v) <> "|") $ M.assocs $ let Genotype g = genotype i in g)
         <> string ">"
         <> nl
 
 runWithXnec :: RawFilePath -> Text -> IO Fitness
 runWithXnec necfile bpheno = do
   csvReady <- liftIO $ newIORef False
-  T.writeFile (B.unpack necfile) $ bpheno
+  T.writeFile (B.unpack necfile) bpheno
   let touchcmd = "touch " ++ B.unpack necfile ++ ".csv"
   void $ system touchcmd
   withINotify $ \notify -> do

@@ -147,7 +147,7 @@ rpCard = otherCard
 enCard = gaodbg "enCard" $ do
   void $ lexeme $ symbol "EN"
   void $ lexeme $ many printChar
-  return $ Card $ EN
+  return $ Card EN
 otherCard = gaodbg "Other" $ do
   ct <- lexeme $ some alphaNumChar
   rest <- lexeme $ many printChar

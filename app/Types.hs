@@ -39,7 +39,7 @@ instance Semigroup Fitness where
 data PhenotypeData = PhenotypeData {data_ :: Text, fitness :: Fitness}
   deriving (Eq, Show)
 
-data Phenotype = Phenotype
+newtype Phenotype = Phenotype
   {getPhenotype :: These PhenotypeData (Map Band PhenotypeData)}
   deriving (Eq, Show)
 

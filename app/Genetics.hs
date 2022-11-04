@@ -24,7 +24,7 @@ selectSurvivors = do
           sortBy
             ( \i i' ->
                 let getScore ind =
-                      if (score $ fromJust (phenotype ind)) < 0
+                      if score (fromJust (phenotype ind)) < 0
                         then 100000
                         else score $ fromJust (phenotype ind)
                  in compare (getScore i) (getScore i')
@@ -77,9 +77,11 @@ genNextGen = do
 
 score :: Phenotype -> Float
 score (Phenotype (This (PhenotypeData _ (Fitness vswr gain fbr)))) = calc vswr gain fbr
-score (Phenotype (This (PhenotypeData _ (None)))) = 0
-score (Phenotype (That bmd)) = let Fitness a b c = foldr (<>) None $ fmap fitness bmd in calc a b c
-score (Phenotype (These _ bmd)) = case (foldr (<>) None $ fmap fitness bmd) of
+score (Phenotype (This (PhenotypeData _ None))) = 0
+score (Phenotype (That bmd)) = case foldr (<>) None $ fmap fitness bmd of
+  Fitness a b c -> calc a b c
+  None -> 0
+score (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
   Fitness a b c -> calc a b c
   None -> 0
 
