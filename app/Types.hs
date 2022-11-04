@@ -54,17 +54,30 @@ data Individual = Individual
   }
   deriving (Eq, Show)
 
+data OptimizingMode = VSWR | GAIN | VSWRGAIN
+  deriving (Eq, Ord, Enum, Show, Read)
+
+data DirectiveMode = SYMETRICAL | DIRECTIVE
+  deriving (Eq, Ord, Enum, Show, Read)
+
 data GAOOpts = GAOOpts
   { gaoFile :: String,
     verbosity :: Int,
     selectDistinct :: Bool,
     popSize :: Int,
-    initGenCount :: Int
+    initGenCount :: Int,
+    omode :: OptimizingMode,
+    dmode :: DirectiveMode
   }
   deriving (Show)
 
 defaultGAOOpts :: GAOOpts
-defaultGAOOpts = GAOOpts "" 0 False 20 10
+defaultGAOOpts = GAOOpts "" 0 False 20 10 VSWRGAIN SYMETRICAL
+
+newtype OptFun = OF {runOf :: Fitness -> Float}
+
+instance Show OptFun where
+  show = const "OptFun"
 
 data GAOEnv = GAOEnv
   { done :: Bool,
@@ -75,12 +88,13 @@ data GAOEnv = GAOEnv
     opts :: GAOOpts,
     gaomodel :: GAOModel,
     bands :: [Band],
-    xnec2c :: Maybe ThreadId
+    xnec2c :: Maybe ThreadId,
+    optfun :: OptFun
   }
   deriving (Show)
 
 defaultGAOEnv :: GAOEnv
-defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing
+defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing (OF (const 0))
 
 newtype GAO a = GAO {runGAO :: GAOEnv -> IO (a, GAOEnv)}
   deriving

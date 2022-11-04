@@ -173,17 +173,44 @@ toText a = padl $ text $ T.replace "." "," $ T.pack $ show a
 
 renderFitness :: Text -> Fitness -> Text
 renderFitness _ None = ""
-renderFitness lab (Fitness swr gain fbr) = run $ tab <> padl (text lab) 
-                                              <> tab <> string "VSWR " <> padl (fixedDouble 4 $ float2Double swr)
-                                              <> tab <> string "Raw Gain" <> padl (fixedDouble 2 $ float2Double gain) <> string " dBi" 
-                                              <> tab <> tab <> string "F/B Ratio " <> padl (fixedDouble 2 $ float2Double fbr) <> string " dB"
+renderFitness lab (Fitness swr gain fbr) =
+  run $
+    tab <> padl (text lab)
+      <> tab
+      <> string "VSWR "
+      <> padl (fixedDouble 4 $ float2Double swr)
+      <> tab
+      <> string "Raw Gain"
+      <> padl (fixedDouble 2 $ float2Double gain)
+      <> string " dBi"
+      <> tab
+      <> tab
+      <> string "F/B Ratio "
+      <> padl (fixedDouble 2 $ float2Double fbr)
+      <> string " dB"
 
-renderScore :: Phenotype -> Text
-renderScore pt = run $ tab <> string "Score used for optimization (higher is better) : "<> tab <> padl (fixedDouble 2 $ float2Double $ score pt)
+renderScore :: OptFun -> Phenotype -> Text
+renderScore o pt =
+  run $
+    tab <> string "Score used for optimization (higher is better) : "
+      <> tab
+      <> padl (fixedDouble 2 $ float2Double $ score o pt)
+
+renderOptModes :: GAO Text
+renderOptModes = do
+  s <- get
+  pure $
+    run $
+      tab <> string "Optimizing for " <> padl (string (show (omode $ opts s))) <> nl
+        <> tab
+        <> string "Optimizing a   "
+        <> padl (string (show (dmode $ opts s)))
+        <> " antenna."
 
 evalPhenotypes :: GAO ()
 evalPhenotypes = do
   s <- get
+
   printGeneration
   let ptc = Prelude.length $ generation s
   g' <-
@@ -204,9 +231,12 @@ evalPhenotypes = do
             This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
             That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
             These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
-          
+
           liftIO $ T.putStrLn "\n\n"
-          liftIO $ T.putStrLn $ renderScore $ fromJust $ phenotype i'
+          liftIO $ T.putStrLn $ renderScore (optfun s) $ fromJust $ phenotype i'
+          liftIO $ T.putStrLn "\n"
+          modes <- renderOptModes
+          liftIO $ T.putStrLn modes
           liftIO $ T.putStrLn "\n\n\n"
 
           return i'

@@ -6,12 +6,10 @@ import Control.Monad.State
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
-import Data.These
 import Genotype
 import System.Random
 import Types
 import Utils
-
 
 selectSurvivors :: GAO ()
 selectSurvivors = do
@@ -21,20 +19,22 @@ selectSurvivors = do
       gc = fromIntegral $ length g
       sc = floor $ gc * (0.6 :: Double)
       g' =
-        take sc $ reverse $
+        take sc $
           sortBy
-            ( \i i' ->
-                let getScore ind =
-                      if score (fromJust (phenotype ind)) < 0
-                        then 100000
-                        else score $ fromJust (phenotype ind)
-                 in compare (getScore i) (getScore i')
+            ( flip
+                ( \i i' ->
+                    let getScore ind =
+                          if score (optfun s) (fromJust (phenotype ind)) < 0
+                            then 100000
+                            else score (optfun s) $ fromJust (phenotype ind)
+                     in compare (getScore i) (getScore i')
+                )
             )
-            $ selector g
+            (selector g)
       dupmap = zipWith (\a _ -> floor $ fromIntegral (length g' - a) / (5.0 :: Double)) [1 ..] g'
       g'' = concat $ zipWith replicate dupmap g'
   modify (\u -> u {generation = g''})
-  liftIO $ mapM_ (print . score . fromJust . phenotype) g''
+  liftIO $ mapM_ (print . score (optfun s) . fromJust . phenotype) g''
 
 applyGenOperations :: GAO ()
 applyGenOperations = do
@@ -75,5 +75,3 @@ genNextGen = do
       then (generation s <>) <$> generateNindividuals delta
       else pure $ take ps $ generation s
   modify (\u -> u {generation = gts})
-
-
