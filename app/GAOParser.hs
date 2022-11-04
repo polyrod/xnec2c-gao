@@ -157,7 +157,7 @@ otherCard = gaodbg "Other" $ do
 
 identifier :: Parser Text
 identifier = do
-  t <- lexeme ((:) <$> letterChar <*> some (choice [alphaNumChar,single '_']))
+  t <- lexeme ((:) <$> letterChar <*> many (choice [alphaNumChar,single '_']))
   return $ T.pack t
 
 range :: Parser Range
