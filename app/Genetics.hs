@@ -10,6 +10,7 @@ import Data.These
 import Genotype
 import System.Random
 import Types
+import Utils
 
 
 selectSurvivors :: GAO ()
@@ -20,7 +21,7 @@ selectSurvivors = do
       gc = fromIntegral $ length g
       sc = floor $ gc * (0.6 :: Double)
       g' =
-        take sc $
+        take sc $ reverse $
           sortBy
             ( \i i' ->
                 let getScore ind =
@@ -75,16 +76,4 @@ genNextGen = do
       else pure $ take ps $ generation s
   modify (\u -> u {generation = gts})
 
-score :: Phenotype -> Float
-score (Phenotype (This (PhenotypeData _ (Fitness vswr gain fbr)))) = calc vswr gain fbr
-score (Phenotype (This (PhenotypeData _ None))) = 0
-score (Phenotype (That bmd)) = case foldr (<>) None $ fmap fitness bmd of
-  Fitness a b c -> calc a b c
-  None -> 0
-score (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
-  Fitness a b c -> calc a b c
-  None -> 0
-
-calc :: Fractional a => a -> a -> a -> a
-calc a b c = 1 / a + b + c
 
