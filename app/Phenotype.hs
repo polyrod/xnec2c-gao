@@ -201,10 +201,10 @@ renderOptModes = do
   s <- get
   pure $
     run $
-      tab <> string "Optimizing for " <> padl (string (show (omode $ opts s))) <> nl
+      tab <> string "Optimizing for " <> padl (string (omodeShow (omode $ opts s))) <> nl
         <> tab
         <> string "Optimizing a   "
-        <> padl (string (show (dmode $ opts s)))
+        <> padl (string (dmodeShow (dmode $ opts s)))
         <> " antenna."
 
 evalPhenotypes :: GAO ()

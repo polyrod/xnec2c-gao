@@ -9,6 +9,7 @@ import Control.Monad.State
 import OptFunc
 import Options.Applicative
 import Types
+import Utils
 
 gaoopts :: Parser GAOOpts
 gaoopts =
@@ -53,23 +54,39 @@ gaoopts =
             <> metavar "INT"
         )
       <*> option
-        auto
+        oMode
         ( long "optimization-mode"
             <> short 'o'
-            <> help "What should we optimize for: VSWR,GAIN,VSWRGAIN"
-            <> showDefault
-            <> value VSWRGAIN
+            <> help "What should we optimize for: vswr, gain, vswr+gain"
+            <> showDefaultWith omodeShow
+            <> value VSWRGAIN 
             <> metavar "omode"
         )
       <*> option
-        auto
+        dMode
         ( long "directional-mode"
             <> short 'y'
-            <> help "Are we optimizing a symetrical or directive antenna: SYMETRICAL,DIRECTIVE"
-            <> showDefault
+            <> help "Are we optimizing a symetrical or directive antenna: symetrical, directive"
+            <> showDefaultWith dmodeShow
             <> value SYMETRICAL
             <> metavar "dmode"
         )
+
+
+
+oMode :: ReadM OptimizingMode
+oMode = str >>= \s -> case s of
+    "vswr"          -> return VSWR
+    "gain"          -> return GAIN
+    "vswr+gain"     -> return VSWRGAIN
+    _ -> readerError "Accepted optimiziation modes are 'vswr', 'gain', and 'vswr+gain'."
+
+dMode :: ReadM DirectiveMode
+dMode = str >>= \s -> case s of
+    "symetrical"         -> return SYMETRICAL
+    "directive"          -> return DIRECTIVE
+    _ -> readerError "Accepted directional modes are 'symetrical' or 'directive'."
+
 
 parseOptions :: GAO ()
 parseOptions = do
