@@ -66,9 +66,9 @@ gaoopts =
         dMode
         ( long "directional-mode"
             <> short 'y'
-            <> help "Are we optimizing a symetrical or directive antenna: symetrical, directive"
+            <> help "Are we optimizing a symmetrical or directive antenna: symmetrical, directive"
             <> showDefaultWith dmodeShow
-            <> value SYMETRICAL
+            <> value SYMMETRICAL
             <> metavar "dmode"
         )
 
@@ -83,9 +83,9 @@ oMode = str >>= \s -> case s of
 
 dMode :: ReadM DirectiveMode
 dMode = str >>= \s -> case s of
-    "symetrical"         -> return SYMETRICAL
+    "symmetrical"         -> return SYMMETRICAL
     "directive"          -> return DIRECTIVE
-    _ -> readerError "Accepted directional modes are 'symetrical' or 'directive'."
+    _ -> readerError "Accepted directional modes are 'symmetrical' or 'directive'."
 
 
 parseOptions :: GAO ()

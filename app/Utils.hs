@@ -51,7 +51,7 @@ omodeShow GAIN = "gain"
 omodeShow VSWRGAIN = "vswr+gain"
 
 dmodeShow :: DirectiveMode -> String
-dmodeShow SYMETRICAL = "symetrical"
+dmodeShow SYMMETRICAL = "symetrical"
 dmodeShow DIRECTIVE = "directive"
 
 

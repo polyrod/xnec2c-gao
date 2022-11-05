@@ -57,7 +57,7 @@ data Individual = Individual
 data OptimizingMode = VSWR | GAIN | VSWRGAIN
   deriving (Eq, Ord, Enum, Show, Read)
 
-data DirectiveMode = SYMETRICAL | DIRECTIVE
+data DirectiveMode = SYMMETRICAL | DIRECTIVE
   deriving (Eq, Ord, Enum, Show, Read)
 
 data GAOOpts = GAOOpts
@@ -72,7 +72,7 @@ data GAOOpts = GAOOpts
   deriving (Show)
 
 defaultGAOOpts :: GAOOpts
-defaultGAOOpts = GAOOpts "" 0 False 20 10 VSWRGAIN SYMETRICAL
+defaultGAOOpts = GAOOpts "" 0 False 20 10 VSWRGAIN SYMMETRICAL
 
 newtype OptFun = OF {runOf :: Fitness -> Float}
 

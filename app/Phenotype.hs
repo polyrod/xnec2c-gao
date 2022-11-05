@@ -174,8 +174,7 @@ toText a = padl $ text $ T.replace "." "," $ T.pack $ show a
 renderFitness :: Text -> Fitness -> Text
 renderFitness _ None = ""
 renderFitness lab (Fitness swr gain fbr) =
-  run $
-    tab <> padl (text lab)
+  run $ (if T.null lab then mempty else (tab <> padl (text lab)))
       <> tab
       <> string "VSWR "
       <> padl (fixedDouble 4 $ float2Double swr)
@@ -226,15 +225,15 @@ evalPhenotypes = do
                   <> nl
           i' <- runPhenotype i
           liftIO $ printGenotype i'
-          liftIO $ T.putStrLn "\n"
+          liftIO $ T.putStr "\n"
           liftIO $ case getPhenotype $ fromJust $ phenotype i' of
             This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
             That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
             These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
 
-          liftIO $ T.putStrLn "\n\n"
+          liftIO $ T.putStr "\n"
           liftIO $ T.putStrLn $ renderScore (optfun s) $ fromJust $ phenotype i'
-          liftIO $ T.putStrLn "\n"
+          liftIO $ T.putStr "\n"
           modes <- renderOptModes
           liftIO $ T.putStrLn modes
           liftIO $ T.putStrLn "\n\n\n"
