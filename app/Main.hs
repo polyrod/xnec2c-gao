@@ -2,7 +2,6 @@
 
 module Main where
 
-import Control.Concurrent
 import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.State
@@ -16,6 +15,7 @@ import Genotype
 import Options
 import Phenotype
 import System.IO
+import System.Process (terminateProcess)
 import Types
 import Utils
 
@@ -67,7 +67,7 @@ outputResult = do
   s <- get
   let survivors = nub $ filter (\i -> isJust (phenotype i) && (hasFitness . fromJust . phenotype) i) $ generation s
   mapM_ toFile $ zip [1 ..] survivors
-  liftIO $ killThread $ fromJust $ xnec2c s
+  liftIO $ terminateProcess $ let (XN p) = fromJust $ xnec2c s in p
 
 toFile :: (Int, Individual) -> GAO ()
 toFile (n, i) = do

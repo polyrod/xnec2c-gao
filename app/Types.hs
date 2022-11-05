@@ -9,7 +9,6 @@
 module Types where
 
 import Control.Applicative
-import Control.Concurrent
 import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Control.Monad.State
@@ -17,6 +16,7 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Text (Text)
 import Data.These
+import System.Process
 
 newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
   deriving (Eq, Show, Functor, Foldable, Traversable)
@@ -79,6 +79,11 @@ newtype OptFun = OF {runOf :: Fitness -> Float}
 instance Show OptFun where
   show = const "OptFun"
 
+newtype Xnec2cProc = XN ProcessHandle
+
+instance Show Xnec2cProc where
+  show = const "Xnec2c Process"
+
 data GAOEnv = GAOEnv
   { done :: Bool,
     prototype :: Genotype Range,
@@ -88,7 +93,7 @@ data GAOEnv = GAOEnv
     opts :: GAOOpts,
     gaomodel :: GAOModel,
     bands :: [Band],
-    xnec2c :: Maybe ThreadId,
+    xnec2c :: Maybe Xnec2cProc,
     optfun :: OptFun
   }
   deriving (Show)

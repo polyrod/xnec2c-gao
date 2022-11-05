@@ -21,7 +21,7 @@ import GHC.Float
 import System.FilePath.Posix.ByteString
 import System.INotify
 import System.Posix.Directory.ByteString
-import System.Process (system)
+import System.Process (system,spawnCommand)
 import Text.Builder
 import Types
 import Utils
@@ -285,8 +285,8 @@ startXnec2c necfile = do
   s <- get
   unless (isJust $ xnec2c s) $ do
     let cmd = "sleep 2 && xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
-    tid <- liftIO $ forkIO $ void $ system cmd
-    modify (\u -> u {xnec2c = Just tid})
+    xnec <- liftIO $ spawnCommand cmd
+    modify (\u -> u {xnec2c = Just (XN xnec)})
 
 printGenotype :: Individual -> IO ()
 printGenotype i = do
