@@ -15,7 +15,7 @@ import Genotype
 import Options
 import Phenotype
 import System.IO
-import System.Process (terminateProcess)
+import System.Process (terminateProcess,waitForProcess)
 import Types
 import Utils
 
@@ -67,7 +67,12 @@ outputResult = do
   s <- get
   let survivors = nub $ filter (\i -> isJust (phenotype i) && (hasFitness . fromJust . phenotype) i) $ generation s
   mapM_ toFile $ zip [1 ..] survivors
-  liftIO $ terminateProcess $ let (XN p) = fromJust $ xnec2c s in p
+  liftIO $ do
+    when (isJust $ xnec2c s) $
+       do
+        let (XN p) = fromJust $ xnec2c s
+        terminateProcess p
+        void $ waitForProcess p
 
 toFile :: (Int, Individual) -> GAO ()
 toFile (n, i) = do
