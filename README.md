@@ -211,7 +211,8 @@ This will yield:
     xnec2c-gao - a genetic algorithm optimizer for your antenna model
 
     Usage: xnec2c-gao (-f|--gaofile FILENAME) [-v] [-d|--select-distinct] 
-                      [-s|--population-size INT] [-c|--generation-count INT]
+                      [-s|--population-size INT] [-c|--generation-count INT] 
+                      [-o|--optimization-mode omode] [-y|--directional-mode dmode]
 
       Run an optimizer for GAOModel FILENAME
 
@@ -225,12 +226,17 @@ This will yield:
       -c,--generation-count INT
                                How many generations to run the optimizer
                                (default: 10)
+      -o,--optimization-mode omode
+                               What should we optimize for: VSWR,GAIN,VSWRGAIN
+                               (default: VSWRGAIN)
+      -y,--directional-mode dmode
+                               Are we optimizing a symetrical or directive antenna:
+                               SYMETRICAL,DIRECTIVE (default: SYMETRICAL)
       -h,--help                Show this help text
 
     Copyright 2022 Maurizio Di Pietro DC1MDP. Program is provided "as is". Author is
     not responsible for any havoc caused by the usage of this software. Use at own
     risk.
-
 
 ## Running your optimization
 

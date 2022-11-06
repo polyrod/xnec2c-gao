@@ -34,18 +34,24 @@ outputPhenotype :: Phenotype -> Text
 outputPhenotype (Phenotype (This (PhenotypeData d _))) = d
 outputPhenotype (Phenotype (These (PhenotypeData d _) _)) = d
 
-score :: Phenotype -> Float
-score (Phenotype (This (PhenotypeData _ (Fitness vswr gain fbr)))) = calc vswr gain fbr
-score (Phenotype (This (PhenotypeData _ None))) = 0
-score (Phenotype (That bmd)) = case foldr (<>) None $ fmap fitness bmd of
-  Fitness a b c -> calc a b c
+score :: OptFun -> Phenotype -> Float
+score (OF h) (Phenotype (This (PhenotypeData _ f@(Fitness {})))) = h f
+score _ (Phenotype (This (PhenotypeData _ None))) = 0
+score (OF h) (Phenotype (That bmd)) = case foldr (<>) None $ fmap fitness bmd of
+  f@(Fitness {}) -> h f
   None -> 0
-score (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
-  Fitness a b c -> calc a b c
+score (OF h) (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
+  f@(Fitness {}) -> h f
   None -> 0
 
-calc :: Fractional a => a -> a -> a -> a
-calc a b c = 100 / a + 3 * b / 100 + 1 / (c * c)
+omodeShow :: OptimizingMode -> String
+omodeShow VSWR = "vswr"
+omodeShow GAIN = "gain"
+omodeShow VSWRGAIN = "vswr+gain"
+
+dmodeShow :: DirectiveMode -> String
+dmodeShow SYMMETRICAL = "symetrical"
+dmodeShow DIRECTIVE = "directive"
 
 ppState :: GAO ()
 ppState = do

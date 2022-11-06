@@ -17,11 +17,11 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.These
-import GHC.Float
+import Display
 import System.FilePath.Posix.ByteString
 import System.INotify
 import System.Posix.Directory.ByteString
-import System.Process (system)
+import System.Process (spawnCommand, system)
 import Text.Builder
 import Types
 import Utils
@@ -105,12 +105,6 @@ renderDeck bs cs = do
       then Phenotype $ This p
       else Phenotype $ These p ppb
 
-tab :: Builder
-tab = char '\t'
-
-nl :: Builder
-nl = char '\n'
-
 renderCard :: Maybe Band -> Card Float -> Text
 renderCard _ (Card (CM t)) = run $ padr (string "CM") <> tab <> text t <> nl
 renderCard _ (Card (CE t)) = run $ padr (string "CE") <> tab <> text t <> nl
@@ -162,39 +156,10 @@ renderCard (Just b) (Card EN) =
           <> nl
 renderCard _ (Card (Other t1 t2)) = run $ padr (text t1) <> tab <> text (T.concat $ intersperse "\t" $ T.words t2) <> nl
 
-padr :: Builder -> Builder
-padr = padFromRight 3 ' '
-
-padl :: Builder -> Builder
-padl = padFromLeft 11 ' '
-
-toText :: Show a => a -> Builder
-toText a = padl $ text $ T.replace "." "," $ T.pack $ show a
-
-renderFitness :: Text -> Fitness -> Text
-renderFitness _ None = ""
-renderFitness lab (Fitness swr gain fbr) =
-  run $
-    tab <> padl (text lab)
-      <> tab
-      <> string "VSWR "
-      <> padl (fixedDouble 4 $ float2Double swr)
-      <> tab
-      <> string "Raw Gain"
-      <> padl (fixedDouble 2 $ float2Double gain)
-      <> string " dBi"
-      <> tab
-      <> tab
-      <> string "F/B Ratio "
-      <> padl (fixedDouble 2 $ float2Double fbr)
-      <> string " dB"
-
-renderScore :: Phenotype -> Text
-renderScore pt = run $ tab <> string "Score used for optimization (higher is better) : " <> tab <> padl (fixedDouble 2 $ float2Double $ score pt)
-
 evalPhenotypes :: GAO ()
 evalPhenotypes = do
   s <- get
+
   printGeneration
   let ptc = Prelude.length $ generation s
   g' <-
@@ -210,14 +175,17 @@ evalPhenotypes = do
                   <> nl
           i' <- runPhenotype i
           liftIO $ printGenotype i'
-          liftIO $ T.putStrLn "\n"
+          liftIO $ T.putStr "\n"
           liftIO $ case getPhenotype $ fromJust $ phenotype i' of
             This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
             That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
             These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
 
-          liftIO $ T.putStrLn "\n\n"
-          liftIO $ T.putStrLn $ renderScore $ fromJust $ phenotype i'
+          liftIO $ T.putStr "\n"
+          liftIO $ T.putStrLn $ renderScore (optfun s) $ fromJust $ phenotype i'
+          liftIO $ T.putStr "\n"
+          modes <- renderOptModes
+          liftIO $ T.putStrLn modes
           liftIO $ T.putStrLn "\n\n\n"
 
           return i'
@@ -266,17 +234,8 @@ startXnec2c necfile = do
   s <- get
   unless (isJust $ xnec2c s) $ do
     let cmd = "sleep 2 && xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
-    tid <- liftIO $ forkIO $ void $ system cmd
-    modify (\u -> u {xnec2c = Just tid})
-
-printGenotype :: Individual -> IO ()
-printGenotype i = do
-  T.putStr $
-    run $
-      tab <> string "Genotype is <|"
-        <> foldl (<>) mempty (fmap (\(k, v) -> text k <> ": " <> fixedDouble 4 (float2Double v) <> "|") $ M.assocs $ let Genotype g = genotype i in g)
-        <> string ">"
-        <> nl
+    xnec <- liftIO $ spawnCommand cmd
+    modify (\u -> u {xnec2c = Just (XN xnec)})
 
 runWithXnec :: RawFilePath -> Text -> IO Fitness
 runWithXnec necfile bpheno = do
@@ -296,8 +255,3 @@ runWithXnec necfile bpheno = do
   let bfbr = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 16) <$> csvData)
 
   return $ Fitness bvswr bgain bfbr
-
-printGeneration :: GAO ()
-printGeneration = do
-  s <- get
-  liftIO $ T.putStrLn $ run $ string "Generation " <> decimal (genNum s) <> " of " <> decimal (genCount s)

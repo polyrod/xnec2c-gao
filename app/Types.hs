@@ -9,7 +9,6 @@
 module Types where
 
 import Control.Applicative
-import Control.Concurrent
 import Control.Monad.IO.Class
 import Control.Monad.Reader
 import Control.Monad.State
@@ -17,6 +16,7 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Text (Text)
 import Data.These
+import System.Process
 
 newtype Genotype a = Genotype {getGenotype :: Map Symbol a}
   deriving (Eq, Show, Functor, Foldable, Traversable)
@@ -54,17 +54,35 @@ data Individual = Individual
   }
   deriving (Eq, Show)
 
+data OptimizingMode = VSWR | GAIN | VSWRGAIN
+  deriving (Eq, Ord, Enum, Show, Read)
+
+data DirectiveMode = SYMMETRICAL | DIRECTIVE
+  deriving (Eq, Ord, Enum, Show, Read)
+
 data GAOOpts = GAOOpts
   { gaoFile :: String,
     verbosity :: Int,
     selectDistinct :: Bool,
     popSize :: Int,
-    initGenCount :: Int
+    initGenCount :: Int,
+    omode :: OptimizingMode,
+    dmode :: DirectiveMode
   }
   deriving (Show)
 
 defaultGAOOpts :: GAOOpts
-defaultGAOOpts = GAOOpts "" 0 False 20 10
+defaultGAOOpts = GAOOpts "" 0 False 20 10 VSWRGAIN SYMMETRICAL
+
+newtype OptFun = OF {runOf :: Fitness -> Float}
+
+instance Show OptFun where
+  show = const "OptFun"
+
+newtype Xnec2cProc = XN ProcessHandle
+
+instance Show Xnec2cProc where
+  show = const "Xnec2c Process"
 
 data GAOEnv = GAOEnv
   { done :: Bool,
@@ -75,12 +93,13 @@ data GAOEnv = GAOEnv
     opts :: GAOOpts,
     gaomodel :: GAOModel,
     bands :: [Band],
-    xnec2c :: Maybe ThreadId
+    xnec2c :: Maybe Xnec2cProc,
+    optfun :: OptFun
   }
   deriving (Show)
 
 defaultGAOEnv :: GAOEnv
-defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing
+defaultGAOEnv = GAOEnv False emptyGenotype [] 1 0 defaultGAOOpts (GAOModel []) [] Nothing (OF (const 0))
 
 newtype GAO a = GAO {runGAO :: GAOEnv -> IO (a, GAOEnv)}
   deriving
