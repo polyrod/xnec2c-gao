@@ -6,11 +6,11 @@ import Control.Monad.State
 import Data.List
 import qualified Data.Map as M
 import Data.Maybe
+import Display
 import Genotype
 import System.Random
 import Types
 import Utils
-import Display
 
 selectSurvivors :: GAO ()
 selectSurvivors = do

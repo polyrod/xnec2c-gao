@@ -1,16 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Display where
 
+import Control.Monad.State
+import qualified Data.Map as M
+import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import GHC.Float
 import Text.Builder
-import qualified Data.Map as M
 import Types
 import Utils
-import Control.Monad.State
-import GHC.Float
-import Data.Maybe
 
 tab :: Builder
 tab = char '\t'
@@ -30,7 +31,8 @@ toText a = padl $ text $ T.replace "." "," $ T.pack $ show a
 renderFitness :: Text -> Fitness -> Text
 renderFitness _ None = ""
 renderFitness lab (Fitness swr gain fbr) =
-  run $ (if T.null lab then mempty else (tab <> padl (text lab)))
+  run $
+    (if T.null lab then mempty else tab <> padl (text lab))
       <> tab
       <> string "VSWR "
       <> padl (fixedDouble 4 $ float2Double swr)
@@ -71,7 +73,6 @@ printGenotype i = do
         <> string ">"
         <> nl
 
-
 printGeneration :: GAO ()
 printGeneration = do
   s <- get
@@ -80,14 +81,25 @@ printGeneration = do
 printGenerationSummary :: [Individual] -> GAO ()
 printGenerationSummary is = do
   s <- get
-  let summary = run $ foldr (<>) mempty $ flip map (zip [(1::Int)..] is) $ \(n,i) -> 
-                          let p = fromJust . phenotype $ i
-                              (Fitness swr gain fbr) = getFitness p
-                              scr = score (optfun s) p
-                              line = tab <> decimal n <> tab <> "Avg VSWR:  " <> padl (fixedDouble 2 (float2Double swr))
-                                                      <> tab <> "Raw Gain:  " <> padl (fixedDouble 2 (float2Double gain)) <> " dBi"
-                                                      <> tab <> "F/B Ratio: " <> padl (fixedDouble 2 (float2Double fbr)) <> " dB"
-                                                      <> tab <> "Score:     " <> padl (fixedDouble 2 (float2Double scr))
-                                                      <> nl
-                          in line
+  let summary = run $
+        mconcat $
+          flip map (zip [(1 :: Int) ..] is) $ \(n, i) ->
+            let p = fromJust . phenotype $ i
+                (Fitness swr gain fbr) = getFitness p
+                scr = score (optfun s) p
+                line =
+                  tab <> decimal n <> tab <> "Avg VSWR:  " <> padl (fixedDouble 2 (float2Double swr))
+                    <> tab
+                    <> "Raw Gain:  "
+                    <> padl (fixedDouble 2 (float2Double gain))
+                    <> " dBi"
+                    <> tab
+                    <> "F/B Ratio: "
+                    <> padl (fixedDouble 2 (float2Double fbr))
+                    <> " dB"
+                    <> tab
+                    <> "Score:     "
+                    <> padl (fixedDouble 2 (float2Double scr))
+                    <> nl
+             in line
   liftIO $ T.putStrLn summary

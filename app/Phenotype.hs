@@ -17,14 +17,14 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.These
+import Display
 import System.FilePath.Posix.ByteString
 import System.INotify
 import System.Posix.Directory.ByteString
-import System.Process (system,spawnCommand)
+import System.Process (spawnCommand, system)
 import Text.Builder
 import Types
 import Utils
-import Display
 
 type Env = Map Symbol Float
 
@@ -104,7 +104,6 @@ renderDeck bs cs = do
     if M.null ppb
       then Phenotype $ This p
       else Phenotype $ These p ppb
-
 
 renderCard :: Maybe Band -> Card Float -> Text
 renderCard _ (Card (CM t)) = run $ padr (string "CM") <> tab <> text t <> nl

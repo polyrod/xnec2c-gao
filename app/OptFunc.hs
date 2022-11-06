@@ -15,7 +15,7 @@ gain g = 30 * g
 
 fbr :: DirectiveMode -> Float -> Float
 fbr SYMMETRICAL 0 = 1000
-fbr SYMMETRICAL f 
-  | f < 0.3 = 100 / 0.3 + (f * f) 
+fbr SYMMETRICAL f
+  | f < 0.3 = 100 / 0.3 + (f * f)
   | otherwise = 10 / f
 fbr DIRECTIVE f = 10 * f

@@ -15,7 +15,7 @@ import Genotype
 import Options
 import Phenotype
 import System.IO
-import System.Process (terminateProcess,waitForProcess)
+import System.Process (terminateProcess, waitForProcess)
 import Types
 import Utils
 
@@ -69,7 +69,7 @@ outputResult = do
   mapM_ toFile $ zip [1 ..] survivors
   liftIO $ do
     when (isJust $ xnec2c s) $
-       do
+      do
         let (XN p) = fromJust $ xnec2c s
         terminateProcess p
         void $ waitForProcess p

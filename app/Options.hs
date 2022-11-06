@@ -59,7 +59,7 @@ gaoopts =
             <> short 'o'
             <> help "What should we optimize for: vswr, gain, vswr+gain"
             <> showDefaultWith omodeShow
-            <> value VSWRGAIN 
+            <> value VSWRGAIN
             <> metavar "omode"
         )
       <*> option
@@ -72,21 +72,20 @@ gaoopts =
             <> metavar "dmode"
         )
 
-
-
 oMode :: ReadM OptimizingMode
-oMode = str >>= \s -> case s of
-    "vswr"          -> return VSWR
-    "gain"          -> return GAIN
-    "vswr+gain"     -> return VSWRGAIN
+oMode =
+  str >>= \s -> case s of
+    "vswr" -> return VSWR
+    "gain" -> return GAIN
+    "vswr+gain" -> return VSWRGAIN
     _ -> readerError "Accepted optimiziation modes are 'vswr', 'gain', and 'vswr+gain'."
 
 dMode :: ReadM DirectiveMode
-dMode = str >>= \s -> case s of
-    "symmetrical"         -> return SYMMETRICAL
-    "directive"          -> return DIRECTIVE
+dMode =
+  str >>= \s -> case s of
+    "symmetrical" -> return SYMMETRICAL
+    "directive" -> return DIRECTIVE
     _ -> readerError "Accepted directional modes are 'symmetrical' or 'directive'."
-
 
 parseOptions :: GAO ()
 parseOptions = do

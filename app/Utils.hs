@@ -44,7 +44,6 @@ score (OF h) (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd
   f@(Fitness {}) -> h f
   None -> 0
 
-
 omodeShow :: OptimizingMode -> String
 omodeShow VSWR = "vswr"
 omodeShow GAIN = "gain"
@@ -53,7 +52,6 @@ omodeShow VSWRGAIN = "vswr+gain"
 dmodeShow :: DirectiveMode -> String
 dmodeShow SYMMETRICAL = "symetrical"
 dmodeShow DIRECTIVE = "directive"
-
 
 ppState :: GAO ()
 ppState = do
