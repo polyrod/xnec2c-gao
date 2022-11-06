@@ -10,6 +10,7 @@ import Genotype
 import System.Random
 import Types
 import Utils
+import Display
 
 selectSurvivors :: GAO ()
 selectSurvivors = do
@@ -34,7 +35,7 @@ selectSurvivors = do
       dupmap = zipWith (\a _ -> floor $ fromIntegral (length g' - a) / (5.0 :: Double)) [1 ..] g'
       g'' = concat $ zipWith replicate dupmap g'
   modify (\u -> u {generation = g''})
-  liftIO $ mapM_ (print . score (optfun s) . fromJust . phenotype) g''
+  printGenerationSummary g''
 
 applyGenOperations :: GAO ()
 applyGenOperations = do

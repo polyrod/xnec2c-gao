@@ -46,6 +46,7 @@ executable xnec2c-gao
                  , Phenotype
                  , Genetics
                  , OptFunc
+                 , Display
                  
 
     -- LANGUAGE extensions used by modules in this package.
