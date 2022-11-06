@@ -12,7 +12,6 @@ import System.Random
 import Types
 import Utils
 
-
 selectSurvivors :: GAO ()
 selectSurvivors = do
   s <- get
@@ -21,16 +20,15 @@ selectSurvivors = do
       gc = fromIntegral $ length g
       sc = floor $ gc * (0.6 :: Double)
       g' =
-        take sc $ reverse $
-          sortBy
-            ( \i i' ->
-                let getScore ind =
-                      if score (fromJust (phenotype ind)) < 0
-                        then 100000
-                        else score $ fromJust (phenotype ind)
-                 in compare (getScore i) (getScore i')
-            )
-            $ selector g
+        take sc $
+          sortBy (flip
+              ( \i i' ->
+                  let getScore ind =
+                        if score (fromJust (phenotype ind)) < 0
+                          then 100000
+                          else score $ fromJust (phenotype ind)
+                   in compare (getScore i) (getScore i')
+              )) (selector g)
       dupmap = zipWith (\a _ -> floor $ fromIntegral (length g' - a) / (5.0 :: Double)) [1 ..] g'
       g'' = concat $ zipWith replicate dupmap g'
   modify (\u -> u {generation = g''})
@@ -75,5 +73,3 @@ genNextGen = do
       then (generation s <>) <$> generateNindividuals delta
       else pure $ take ps $ generation s
   modify (\u -> u {generation = gts})
-
-

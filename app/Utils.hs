@@ -1,10 +1,10 @@
 module Utils where
 
+import Control.Monad.State
 import Data.Text (Text)
 import Data.These
-import Types
 import Text.Pretty.Simple
-import Control.Monad.State
+import Types
 
 hasFitness :: Phenotype -> Bool
 hasFitness (Phenotype (This (PhenotypeData _ (Fitness {})))) = True
@@ -44,9 +44,8 @@ score (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
   Fitness a b c -> calc a b c
   None -> 0
 
-
 calc :: Fractional a => a -> a -> a -> a
-calc a b c = 100 / a + 3 * b/100 + 1/(c*c)
+calc a b c = 100 / a + 3 * b / 100 + 1 / (c * c)
 
 ppState :: GAO ()
 ppState = do
