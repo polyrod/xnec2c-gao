@@ -3,6 +3,7 @@
 module Display where
 
 import Control.Monad.State
+import Control.Concurrent
 import qualified Data.Map as M
 import Data.Maybe
 import Data.Text (Text)
@@ -82,7 +83,9 @@ printGenerationSummary :: [Individual] -> GAO ()
 printGenerationSummary is = do
   s <- get
   let summary = run $
-        mconcat $
+        tab <> text "Selected Survivors" <> nl <>
+        tab <> text "==================" <> nl <> nl <> 
+        (mconcat $
           flip map (zip [(1 :: Int) ..] is) $ \(n, i) ->
             let p = fromJust . phenotype $ i
                 (Fitness swr gain fbr) = getFitness p
@@ -101,5 +104,7 @@ printGenerationSummary is = do
                     <> "Score:     "
                     <> padl (fixedDouble 2 (float2Double scr))
                     <> nl
-             in line
-  liftIO $ T.putStrLn summary
+             in line)
+  liftIO $ do
+    T.putStrLn summary
+    threadDelay 6000000
