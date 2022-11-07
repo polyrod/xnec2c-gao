@@ -17,6 +17,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.These
+import Data.Angle
 import Display
 import System.FilePath.Posix.ByteString
 import System.INotify
@@ -92,8 +93,8 @@ eval env (BiOp Mult e1 e2) = eval env e1 * eval env e2
 eval env (BiOp Div e1 e2) = eval env e1 / eval env e2
 eval env (BiOp Exp e1 e2) = eval env e1 ** eval env e2
 eval env (UnOp Negate e) = negate $ eval env e
-eval env (UnOp Sin e) = sin $ eval env e
-eval env (UnOp Cos e) = cos $ eval env e
+eval env (UnOp Sin e) = sine $ Degrees $ eval env e 
+eval env (UnOp Cos e) = cosine $ Degrees $ eval env e
 eval env (UnOp Sqrt e) = sqrt $ eval env e
 
 renderDeck :: [Band] -> Deck Float -> GAO Phenotype
