@@ -156,6 +156,7 @@ renderCard (Just b) (Card EN) =
           <> padr (string "EN")
           <> nl
 renderCard _ (Card (Other t1 t2)) = run $ padr (text t1) <> tab <> text (T.concat $ intersperse "\t" $ T.words t2) <> nl
+renderCard _ _ = error "catchall"
 
 evalPhenotypes :: GAO ()
 evalPhenotypes = do
