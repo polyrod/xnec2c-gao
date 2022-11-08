@@ -6,18 +6,14 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.State
 import Data.Char
-import Data.List
-import Data.Maybe
-import qualified Data.Text.IO as T
 import GAOParser
 import Genetics
 import Genotype
 import Options
+import Output
 import Phenotype
 import System.IO
-import System.Process (terminateProcess, waitForProcess)
 import Types
-import Utils
 
 main :: IO ()
 main = do
@@ -30,6 +26,7 @@ optimizer = do
   genInitGenotypes
   goGAO
   outputResult
+  tidyUp
 
 goGAO :: GAO ()
 goGAO = do
@@ -61,27 +58,3 @@ askProceed = do
     'q' -> pure ()
     'p' -> modify (\u -> u {genCount = genCount u + initGenCount (opts u)}) >> goGAO
     _ -> askProceed
-
-outputResult :: GAO ()
-outputResult = do
-  s <- get
-  let survivors = nub $ filter (\i -> isJust (phenotype i) && (hasFitness . fromJust . phenotype) i) $ generation s
-  mapM_ toFile $ zip [1 ..] survivors
-  liftIO $ do
-    when (isJust $ xnec2c s) $
-      do
-        let (XN p) = fromJust $ xnec2c s
-        terminateProcess p
-        void $ waitForProcess p
-
-toFile :: (Int, Individual) -> GAO ()
-toFile (n, i) = do
-  s <- get
-  let (Fitness vswr _ _) = getFitness $ fromJust $ phenotype i
-      fn =
-        gaoFile (opts s) ++ "_" ++ show n
-          ++ "_[AVSVR:"
-          ++ show vswr
-          ++ "].nec"
-      p = let t = fromJust $ phenotype i in outputPhenotype t
-  liftIO $ T.writeFile fn p

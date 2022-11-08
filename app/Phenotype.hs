@@ -1,14 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeApplications #-}
 
 module Phenotype where
 
-import Control.Concurrent
 import Control.Monad.ListM
-import Control.Monad.Loops
 import Control.Monad.State
+import Data.Angle
 import qualified Data.ByteString.Char8 as B
-import Data.IORef
 import Data.List (intersperse)
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -17,12 +14,10 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.These
-import Data.Angle
 import Display
+import Output
 import System.FilePath.Posix.ByteString
-import System.INotify
 import System.Posix.Directory.ByteString
-import System.Process (spawnCommand, system)
 import Text.Builder
 import Types
 import Utils
@@ -200,7 +195,7 @@ runPhenotype i =
   do
     s <- get
     cwd <- liftIO getWorkingDirectory
-    let necfile = cwd </> takeBaseName (B.pack $ gaoFile $ opts s) <.> "nec"
+    let necfile = cwd </> takeBaseName (B.pack $ gaoFile $ opts s) <.> "run.nec"
     startXnec2c necfile
 
     let pt@(Phenotype ps) = fromJust $ phenotype i
@@ -230,30 +225,3 @@ runPhenotype i =
                 $ M.assocs bdm
           pure $ i {phenotype = Just $ Phenotype $ These p $ M.fromList brm}
       else pure i
-
-startXnec2c :: RawFilePath -> GAO ()
-startXnec2c necfile = do
-  s <- get
-  unless (isJust $ xnec2c s) $ do
-    let cmd = "sleep 2 && xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
-    xnec <- liftIO $ spawnCommand cmd
-    modify (\u -> u {xnec2c = Just (XN xnec)})
-
-runWithXnec :: RawFilePath -> Text -> IO Fitness
-runWithXnec necfile bpheno = do
-  csvReady <- liftIO $ newIORef False
-  T.writeFile (B.unpack necfile) bpheno
-  let touchcmd = "touch " ++ B.unpack necfile ++ ".csv"
-  void $ system touchcmd
-  withINotify $ \notify -> do
-    d <- addWatch notify [Modify, Create] (necfile <.> "csv") (\_ -> writeIORef csvReady True)
-    untilM_ (threadDelay 300000) (readIORef csvReady)
-    threadDelay 300000
-    removeWatch d
-  csvData <- drop 1 . T.lines <$> T.readFile (decodeFilePath $ necfile <.> "csv")
-  let linecount = fromIntegral $ Prelude.length csvData
-  let bvswr = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 5) <$> csvData)
-  let bgain = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 10) <$> csvData)
-  let bfbr = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 16) <$> csvData)
-
-  return $ Fitness bvswr bgain bfbr
