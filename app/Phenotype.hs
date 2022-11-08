@@ -170,7 +170,7 @@ evalPhenotypes = do
           liftIO $
             T.putStrLn $
               run $
-                nl <> tab <> string "Running Phenotype number "
+                nl <> tab <> string "Phenotype "
                   <> decimal (idx :: Int)
                   <> string " of "
                   <> decimal ptc
