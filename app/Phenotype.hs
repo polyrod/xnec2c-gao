@@ -88,7 +88,7 @@ eval env (BiOp Mult e1 e2) = eval env e1 * eval env e2
 eval env (BiOp Div e1 e2) = eval env e1 / eval env e2
 eval env (BiOp Exp e1 e2) = eval env e1 ** eval env e2
 eval env (UnOp Negate e) = negate $ eval env e
-eval env (UnOp Sin e) = sine $ Degrees $ eval env e 
+eval env (UnOp Sin e) = sine $ Degrees $ eval env e
 eval env (UnOp Cos e) = cosine $ Degrees $ eval env e
 eval env (UnOp Sqrt e) = sqrt $ eval env e
 

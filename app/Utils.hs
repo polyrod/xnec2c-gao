@@ -1,9 +1,9 @@
 module Utils where
 
 import Control.Monad.State
+import qualified Data.Map as M
 import Data.Text (Text)
 import Data.These
-import qualified Data.Map as M
 import Text.Pretty.Simple
 import Types
 
@@ -28,10 +28,11 @@ hasFitness _ = False
 getFitness :: Phenotype -> Fitness
 getFitness (Phenotype (This (PhenotypeData _ f@(Fitness {})))) = f
 getFitness (Phenotype (This (PhenotypeData _ None))) = None
-getFitness (Phenotype (That bmd)) = let (Fitness s g fb) = foldr (<>) None $ fmap fitness bmd
-                                        l = fromIntegral $ M.size bmd
-                                     in Fitness (s/l) (g/l) (fb/l) 
-getFitness (Phenotype (These _ bmd)) = getFitness (Phenotype (That bmd)) 
+getFitness (Phenotype (That bmd)) =
+  let (Fitness s g fb) = foldr (<>) None $ fmap fitness bmd
+      l = fromIntegral $ M.size bmd
+   in Fitness (s / l) (g / l) (fb / l)
+getFitness (Phenotype (These _ bmd)) = getFitness (Phenotype (That bmd))
 
 outputPhenotype :: Phenotype -> Text
 outputPhenotype (Phenotype (This (PhenotypeData d _))) = d
