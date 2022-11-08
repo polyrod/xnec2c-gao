@@ -1,3 +1,6 @@
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE LambdaCase #-}
+
 module Options
   ( GAOOpts (..),
     parseOptions,
@@ -6,8 +9,11 @@ where
 
 import Control.Monad.IO.Class
 import Control.Monad.State
+import Data.Version (showVersion)
+import Development.GitRev (gitHash)
 import OptFunc
 import Options.Applicative
+import Paths_xnec2c_gao (version)
 import Types
 import Utils
 
@@ -74,7 +80,7 @@ gaoopts =
 
 oMode :: ReadM OptimizingMode
 oMode =
-  str >>= \s -> case s of
+  str >>= \case
     "vswr" -> return VSWR
     "gain" -> return GAIN
     "vswr+gain" -> return VSWRGAIN
@@ -82,7 +88,7 @@ oMode =
 
 dMode :: ReadM DirectiveMode
 dMode =
-  str >>= \s -> case s of
+  str >>= \case
     "symmetrical" -> return SYMMETRICAL
     "directive" -> return DIRECTIVE
     _ -> readerError "Accepted directional modes are 'symmetrical' or 'directive'."
@@ -92,9 +98,13 @@ parseOptions = do
   gopts <- liftIO $ execParser lopts
   modify (\s -> s {opts = gopts, genCount = initGenCount gopts, optfun = OF (optFunc (omode gopts) (dmode gopts))})
   where
+    versionOption =
+      infoOption
+        (concat [showVersion version, " ", $(gitHash)])
+        (long "version" <> help "Show version")
     lopts =
       info
-        (gaoopts <**> helper)
+        (helper <*> versionOption <*> gaoopts)
         ( fullDesc
             <> progDesc "Run an optimizer for GAOModel FILENAME"
             <> header "xnec2c-gao - a genetic algorithm optimizer for your antenna model"
