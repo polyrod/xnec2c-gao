@@ -12,7 +12,6 @@ import System.Random
 import Types
 import Utils
 
-
 survivorRatio :: Double
 survivorRatio = 0.3
 
@@ -46,7 +45,7 @@ selectSurvivors = do
 applyGenOperations :: GAO ()
 applyGenOperations = do
   g <- gets generation
-  g' <- concat <$> (mapM genetics $ nub g)
+  g' <- concat <$> mapM genetics (nub g)
   modify (\s -> s {generation = nub (g <> g')})
 
 -- TODO clamp,crossover
@@ -60,8 +59,8 @@ genetics i = do
 crossover :: Individual -> GAO [Individual]
 crossover ind = do
   s <- get
-  mateidx <- liftIO $ randomRIO (1, (length $ generation s) - 1)
-  rcidx <- liftIO $ randomRIO (1, (length $ prototype s) - 1)
+  mateidx <- liftIO $ randomRIO (1, length (generation s) - 1)
+  rcidx <- liftIO $ randomRIO (1, length (prototype s) - 1)
   let mate = generation s !! mateidx
       (ab, ba) = recombine rcidx ind mate
   pure $ nub [ab, ba]

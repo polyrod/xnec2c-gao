@@ -12,7 +12,7 @@ swrMaxThrs = 1.5
 
 swr :: Float -> Float
 swr s
-  | s < swrMaxThrs = (swrMaxThrs - s) * 100 + (100/s)
+  | s < swrMaxThrs = (swrMaxThrs - s) * 100 + (100 / s)
   | otherwise = 100 / s
 
 gain :: Float -> Float
