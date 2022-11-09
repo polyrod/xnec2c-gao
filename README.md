@@ -4,6 +4,7 @@
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
+
 `
 <!--ts-->
 * [Xnec2c-gao](#xnec2c-gao)
@@ -24,7 +25,8 @@
    * [Fixing errors in gao file](#fixing-errors-in-gao-file)
    * [Output of xnec2c-gao](#output-of-xnec2c-gao)
 * [TODO](#todo)
-<!--te--> `{=html}
+<!--te-->
+`{=html}
 
 ## What is Xnec2c-gao
 
