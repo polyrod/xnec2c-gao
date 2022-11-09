@@ -4,6 +4,7 @@
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
+`
 <!--ts-->
 * [Xnec2c-gao](#xnec2c-gao)
    * [What is Xnec2c-gao](#what-is-xnec2c-gao)
@@ -20,7 +21,8 @@
    * [Running your optimization](#running-your-optimization)
    * [Fixing errors in gao file](#fixing-errors-in-gao-file)
    * [Output of xnec2c-gao](#output-of-xnec2c-gao)
-<!--te-->
+<!--te--> `{=html}
+
 ## What is Xnec2c-gao
 
 Xnec2c-gao is an external optimizer for the antenna modeling software [Xnec2c](https://www.xnec2c.org/) written by [Neoklis Kyriazis,
