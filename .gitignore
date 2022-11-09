@@ -1,6 +1,10 @@
 dist-newstyle
-*.nec
-*.gao
-*.csv
+./*.nec
+./*.gao
+./*.csv
 .debpkg
 .debpkg/*
+tools/*
+report.html
+examples/*/*gao_*.nec
+examples/*/*.nec.csv

@@ -12,7 +12,6 @@ import Control.Monad.IO.Class
 import Control.Monad.State
 import qualified Data.Char as Char
 import Data.List (foldl')
-import Data.Maybe
 import Data.Proxy
 import Data.Scientific (Scientific, toRealFloat)
 import qualified Data.Scientific as Sci
@@ -33,45 +32,48 @@ type Parser = ParsecT Void Text GAO
 sc :: Parser ()
 sc = L.space hspace1 empty empty
 
+lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
 
+symbol :: Text -> Parser Text
 symbol = L.symbol sc
 
 lineEnd :: Parser ()
---lineEnd = try ((newline *> pure ()) <|>  (eof >> pure ()))
 lineEnd = gaodbg "NL" $ recover $ choice [void (single '\n'), eof, void newline, void crlf, void eol]
-  where recover = withRecovery $ \e -> do
-                    registerParseError e
-                    some (anySingleBut '\n')
-                    void newline
-
+  where
+    recover = withRecovery $ \e -> do
+      registerParseError e
+      void $ some (anySingleBut '\n')
+      void newline
 
 signedNum :: Parser Float
---signedNum = lexeme $ toRealFloat <$> L.signed sc L.scientific
 signedNum = lexeme $ toRealFloat <$> L.signed sc cscientific
 
 gaoparser :: Parser GAOModel
 gaoparser = do
   GAOModel <$> deck
 
+deck :: Parser (Deck Expr)
 deck = do
   zip [1 ..] <$> (card `sepEndBy` lineEnd)
 
+card :: Parser (Card Expr)
 card = do
   choice
     [ cmCard,
       ceCard,
       symCard,
       gsymCard,
+      bndCard,
       gwCard,
-      geCard,
       frCard,
+      enCard,
+      geCard,
       ldCard,
       gnCard,
       exCard,
       ekCard,
       rpCard,
-      enCard,
       symCard,
       gsymCard,
       gaoCard,
@@ -82,56 +84,70 @@ cmCard,
   ceCard,
   symCard,
   gsymCard,
+  bndCard,
   gwCard,
   geCard,
   frCard,
   ldCard,
   gnCard,
   exCard,
+  enCard,
   ekCard,
   rpCard,
   gaoCard,
   otherCard ::
     Parser (Card Expr)
 cmCard = gaodbg "CM" $ do
-  lexeme $ symbol "CM"
+  void $ lexeme $ symbol "CM"
   t <- some printChar
   return $ Card $ CM $ T.pack t
 ceCard = gaodbg "CE" $ do
-  lexeme $ symbol "CE"
+  void $ lexeme $ symbol "CE"
   t <- some printChar
   return $ Card $ CE $ T.pack t
 symCard = gaodbg "symCard" $ do
-  lexeme $ symbol "SYM"
+  void $ lexeme $ symbol "SYM"
   i <- identifier
-  lexeme $ string ":="
+  void $ lexeme $ string ":="
   e <- lexeme $ gaodbg "Expr" expr
   return $ Card $ SYM i e
 gsymCard = gaodbg "gsymCard" $ do
-  lexeme $ symbol "GSYM"
+  void $ lexeme $ symbol "GSYM"
   i <- gaodbg "Ident" identifier
-  lexeme $ string ":="
+  void $ lexeme $ string ":="
   r <- lexeme $ gaodbg "Rnge" range
   return $ Card $ GSYM i r
 gaoCard = otherCard
 gwCard = do
-  lexeme $ symbol "GW"
+  void $ lexeme $ symbol "GW"
   ct <- lexeme L.decimal
-  sc <- lexeme L.decimal
+  segc <- lexeme L.decimal
   [spx, spy, spz] <- count 3 $ lexeme expr
   [epx, epy, epz] <- count 3 $ lexeme expr
   r <- lexeme expr
-  return $ Card $ GW ct sc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r)
+  return $ Card $ GW ct segc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r)
+bndCard = gaodbg "bndCard" $ do
+  void $ lexeme $ symbol "BND"
+  i <- T.pack <$> lexeme (some alphaNumChar)
+  w <- do
+    l <- toRealFloat <$> lexeme cscientific
+    h <- toRealFloat <$> lexeme cscientific
+    pure (l, h)
+  Card . BND . Band i w <$> L.decimal
 geCard = otherCard
-frCard = otherCard
+frCard = gaodbg "FR" $ do
+  void $ lexeme $ symbol "FR"
+  t <- some printChar
+  return $ Card $ FR $ T.pack t
 ldCard = otherCard
 gnCard = otherCard
 exCard = otherCard
 ekCard = otherCard
 rpCard = otherCard
-
-enCard = otherCard
-
+enCard = gaodbg "enCard" $ do
+  void $ lexeme $ symbol "EN"
+  void $ lexeme $ many printChar
+  return $ Card EN
 otherCard = gaodbg "Other" $ do
   ct <- lexeme $ some alphaNumChar
   rest <- lexeme $ many printChar
@@ -139,7 +155,7 @@ otherCard = gaodbg "Other" $ do
 
 identifier :: Parser Text
 identifier = do
-  t <- lexeme ((:) <$> letterChar <*> some (choice [alphaNumChar,single '_']))
+  t <- lexeme ((:) <$> letterChar <*> many (choice [alphaNumChar, single '_']))
   return $ T.pack t
 
 range :: Parser Range
@@ -147,13 +163,17 @@ range = do
   lexeme $
     between "[" "]" $ do
       l <- signedNum
-      lexeme $ string "..."
+      void $ lexeme $ string "..."
       u <- signedNum
       return (l, u)
 
+literal :: Parser Expr
 literal = Lit <$> lexeme signedNum
 
+variable :: Parser Expr
 variable = Var <$> identifier
+
+parens :: Parser a -> Parser a
 parens p = between (symbol "(") (symbol ")") $ lexeme p
 
 term :: Parser Expr
@@ -164,15 +184,17 @@ term = do
       literal
     ]
 
+expr :: Parser Expr
 expr = makeExprParser term optable
 
+optable :: [[Operator Parser Expr]]
 optable =
   [ [ prefix "SIN" (UnOp Sin),
       prefix "COS" (UnOp Cos),
       prefix "SQRT" (UnOp Sqrt),
       prefix "-" (UnOp Negate)
     ],
-    [ binary "^" (BiOp Exp)],
+    [binary "^" (BiOp Exp)],
     [ binary "*" (BiOp Mult),
       binary "/" (BiOp Div)
     ],

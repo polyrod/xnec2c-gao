@@ -26,6 +26,17 @@
 Xnec2c-gao is an external optimizer for the antenna modeling software [Xnec2c](https://www.xnec2c.org/) written by [Neoklis Kyriazis,
 5B4AZ](http://www.5b4az.org/). It uses an genetic algorithm to find solutions in a multidimensional search space.
 
+### Features
+
+  * automatically runs Xnec2c
+  * symbols in your model
+  * mathematic expression evaluation
+  * genetic algorithm control
+  * unlimited number of genes for genetic optimization
+  * ability to specify multiple "bands" as optimization targets
+  * one output nec file per survivor
+
+
 ## Installing xnec2c-gao
 
 ### Install .deb package
@@ -158,6 +169,37 @@ To vary the parameters defined in terms of SYM cards you can use the GSYM symbol
     GSYM  scale := [0,5...1,5]
     SYM   lambda := scale * vf * c / freq
 
+## BND Cards
+
+In xnec2c frequency ranges are specified as one ore more FR Cards. You can use these and
+xnec2c-gao will automatically sweep over the bands they define and does calculation of fittnes
+for all obtained steps. However if for example you specify two FR Cards for antenna model which isn't
+resonant on both bands, the AVSWR calculation show a distorted reading of the average over data points from both bands,
+resonant and non resonant. This makes it somewhat harder for the algorithm to rate the variations of the model and hence to
+produce good results fast.
+
+To prevent this and help the algorithm optimizing your model we have BND Cards in the form :
+
+    BND <label>   <lowfreq>   <highfreq>    <steps>
+
+for 2m ham band it would be:
+
+    BND 2m  144,000  146,000  10
+
+Each BND card instructs xnec2c-gao, to run for each BND Band in isolation for each variant of your model.
+In presence of BND Cards, FR Cards are not considered in optimization. On the resulting output .nec files, only the original
+FR Cards are included , BND Cards disapear.
+
+So you could have a FR card that sweeps the entire HF band from 3.5 MHzto 30 MHz and several BND Cards for only the HAM Bands.
+That would instruct xnec2c-gao to optimize for the HAM Bands and if you run the winner .nec files with xnec2c, it will show
+the performance for the entire 3.5 Mhz to 30Mhz range.
+
+The fewer and narrower the BND Cards are the faster xnec2c-gao will run. Also the with \<steps\> specified count of calculation points,
+will speed up the calculation if \<step\> is lower. So you could also define one FR Card that sweeps the 2m band very detailed, and
+a BND Card for 2m Band that has only a few steps, to make optimization fast and final display detailed.
+
+Example : examples/awx/
+
 # From .gao file to .gao.nec files
 
 After you prepared your .gao file for your antenna model, you can invoke the optimizer.
@@ -169,12 +211,16 @@ This will yield:
      
     xnec2c-gao - a genetic algorithm optimizer for your antenna model
 
-    Usage: xnec2c-gao (-f|--gaofile FILENAME) [-v] [-d|--select-distinct] 
-                      [-s|--population-size INT] [-c|--generation-count INT]
+    Usage: xnec2c-gao [--version] (-f|--gaofile FILENAME) [-v] 
+                      [-d|--select-distinct] [-s|--population-size INT] 
+                      [-c|--generation-count INT] [-o|--optimization-mode omode] 
+                      [-y|--directional-mode dmode]
 
       Run an optimizer for GAOModel FILENAME
 
     Available options:
+      -h,--help                Show this help text
+      --version                Show version
       -f,--gaofile FILENAME    GAO Model to optimize
       -v                       How verbose to optimize (can be specified multiple
                                times)
@@ -184,12 +230,16 @@ This will yield:
       -c,--generation-count INT
                                How many generations to run the optimizer
                                (default: 10)
-      -h,--help                Show this help text
+      -o,--optimization-mode omode
+                               What should we optimize for: vswr, gain, vswr+gain
+                               (default: vswr+gain)
+      -y,--directional-mode dmode
+                               Are we optimizing a symmetrical or directive antenna:
+                               symmetrical, directive (default: symetrical)
 
     Copyright 2022 Maurizio Di Pietro DC1MDP. Program is provided "as is". Author is
     not responsible for any havoc caused by the usage of this software. Use at own
     risk.
-
 
 ## Running your optimization
 
@@ -230,3 +280,11 @@ This error doesn't indicate that you used the wrong number delimeter , but at le
 xnec2c-gao will run for n generations and present you the evolved survivors, you can choose to continue optimizing 
 or if you are satisfied quit the optimization in which case xnec2c-gao will write one .nec file for each survivor.
 The filename of the necfile will also contain the AVSWR calculated by xnec2c.
+
+# TODO
+
+  * examples are not clean
+  * genetic parameters command line options
+  * sanity checks for radius, segment length, ratios
+  * verbosity logging
+  * ...
