@@ -1,0 +1,42 @@
+CM --- NEC2 Input File created or edited by xnec2c 4.4.12 ---
+CE --- End Comments ---
+GSYM gbase := [0,5...4,0]
+SYM afreq := 145800
+SYM bfreq := 436800
+SYM c := 300000
+SYM vk := 0,96
+SYM alambda := vk * c / afreq
+SYM blambda := vk * c / bfreq
+SYM alamq := scale * (alambda / 4)
+SYM blamq := scale * (blambda / 4)
+SYM base := gbase * alambda 
+SYM feeddist := 0,02
+SYM r := 0,0025
+GSYM scale := [0,7...1,5]
+BND 2m    144,000 146,000 20
+BND 70cm  430,000 440,000 20
+SYM tbase := base + (feeddist / 2)
+SYM bbase := base - (feeddist / 2)
+SYM dpart := alamq - blamq
+SYM vpart := blamq
+GSYM angle := [5...85]
+SYM dpartx := COS(angle) * dpart
+SYM dpartz := SIN(angle) * dpart
+GW     1     3   0            0               tbase               0            0            bbase        r
+GW     2     10  (-dpartx)    0               (tbase+dpartz+vpart)      (-dpartx)    0            (tbase+dpartz)     r
+GW     3     10  (-dpartx)    0               (tbase+dpartz)            0            0            (tbase)      r
+GW     4     10  (-dpartx)    0               (bbase-(dpartz+vpart))   (-dpartx)    0            (bbase-dpartz)    r
+GW     5     10  (-dpartx)    0               (bbase-dpartz)           0            0            (bbase)      r
+GW     6     10  (dpartx)    0               (tbase+dpartz+vpart)      (dpartx)     0            (tbase+dpartz)     r
+GW     7     10  (dpartx)    0               (tbase+dpartz)            0            0            (tbase)      r
+GW     8     10  (dpartx)    0               (bbase-(dpartz+vpart))   (dpartx)     0            (bbase-dpartz)    r
+GW     9     10  (dpartx)    0               (bbase-dpartz)           0            0            (bbase)      r
+GE    -1     0   0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+FR     0    50     0     0  1,43800E+02  4,89796E-02  1,46200E+02  0,00000E+00  0,00000E+00  0,00000E+00
+FR     0    50     0     0  4,30000E+02  2,04082E-01  4,40000E+02  0,00000E+00  0,00000E+00  0,00000E+00
+LD     5     0     0      0  2,48000E+07  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+GN     2     0     0      0  1,20000E+01  1,00000E-02  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+EX     0     1     2      0  1,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+EK     -1     0     0      0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+RP     0    18    72   1000  0,00000E+00  0,00000E+00  5,00000E+00  5,00000E+00  1,00000E+01  0,00000E+00
+EN     0     0     0      0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00

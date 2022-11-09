@@ -1,0 +1,23 @@
+CM --- NEC2 Input File created or edited by xnec2c 3.5 ---
+CM 2m Extended (Double Zeppelin) Yagi
+CE --- End Comments ---
+GSYM boom_delta_radi := [-0,3...0,3]
+GSYM boom_delta_dire := [-0,3...0,3]
+SYM boom_pos_refl := 0,0
+SYM boom_pos_radi := boom_pos_refl + 0,4511 + boom_delta_radi
+SYM boom_pos_dire := boom_pos_radi + 0,8605 + boom_delta_dire
+GSYM delta_refl := [-0,3...0,3]
+GSYM delta_radi := [-0,3...0,3]
+GSYM delta_dire := [-0,3...0,3]
+SYM half_refl_len := 1,5137 + delta_refl
+SYM half_radi_len := 1,2656 + delta_radi
+SYM half_dire_len := 0,4386 + delta_dire
+SYM radius := 0,0075
+GW     1    73  half_refl_len  boom_pos_refl  0,00000E+00 (-half_refl_len)  boom_pos_refl  0,00000E+00  radius
+GW     2    61  half_radi_len  boom_pos_radi  0,00000E+00 (-half_radi_len)  boom_pos_radi  0,00000E+00  radius
+GW     3    21  half_dire_len  boom_pos_dire  0,00000E+00 (-half_dire_len)  boom_pos_dire  0,00000E+00  radius
+GE     0     0   0,00000E+00   0,00000E+00    0,00000E+00  0,00000E+00    0,00000E+00    0,00000E+00  0,00000E+00
+EX     0     2    31      0  1,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+RP     0    73    73      0  0,00000E+00  0,00000E+00  2,50000E+00  5,00000E+00  0,00000E+00  0,00000E+00
+FR     0    30     0     0  1,43800E+02  0,08200E+00  1,46200E+02  0,00000E+00  0,00000E+00  0,00000E+00
+EN     0     0     0      0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
