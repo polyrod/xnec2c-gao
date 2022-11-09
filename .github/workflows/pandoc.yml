@@ -19,7 +19,7 @@ jobs:
       run: sudo apt-get install texlive-latex-extra texlive-latex-base librsvg2-bin pandoc
 
     - name: Create .pdf
-      run : pandoc --toc -N -t latex README.md metadata.yaml -o README.pdf
+      run : cat README.md | sed '/<!--ts-->/,/<!--te-->/d' | pandoc --metadata-file=metadata.yaml -t latex -o README.pdf -N --toc
 
 
     - name: Create Pull Request
