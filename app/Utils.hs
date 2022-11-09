@@ -1,6 +1,7 @@
 module Utils where
 
 import Control.Monad.State
+import qualified Data.Map as M
 import Data.Text (Text)
 import Data.These
 import Text.Pretty.Simple
@@ -27,20 +28,21 @@ hasFitness _ = False
 getFitness :: Phenotype -> Fitness
 getFitness (Phenotype (This (PhenotypeData _ f@(Fitness {})))) = f
 getFitness (Phenotype (This (PhenotypeData _ None))) = None
-getFitness (Phenotype (That bmd)) = let f@(Fitness _ _ _) = foldr (<>) None $ fmap fitness bmd in f
-getFitness (Phenotype (These _ bmd)) = let f@(Fitness _ _ _) = foldr (<>) None $ fmap fitness bmd in f
+getFitness (Phenotype (That bmd)) =
+  let (Fitness s g fb) = foldr (<>) None $ fmap fitness bmd
+      l = fromIntegral $ M.size bmd
+   in Fitness (s / l) (g / l) (fb / l)
+getFitness (Phenotype (These _ bmd)) = getFitness (Phenotype (That bmd))
 
 outputPhenotype :: Phenotype -> Text
 outputPhenotype (Phenotype (This (PhenotypeData d _))) = d
 outputPhenotype (Phenotype (These (PhenotypeData d _) _)) = d
+outputPhenotype (Phenotype (That _)) = error "We won't output BNDs"
 
 score :: OptFun -> Phenotype -> Float
 score (OF h) (Phenotype (This (PhenotypeData _ f@(Fitness {})))) = h f
 score _ (Phenotype (This (PhenotypeData _ None))) = 0
-score (OF h) (Phenotype (That bmd)) = case foldr (<>) None $ fmap fitness bmd of
-  f@(Fitness {}) -> h f
-  None -> 0
-score (OF h) (Phenotype (These _ bmd)) = case foldr (<>) None $ fmap fitness bmd of
+score (OF h) p = case getFitness p of
   f@(Fitness {}) -> h f
   None -> 0
 
