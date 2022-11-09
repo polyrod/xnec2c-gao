@@ -7,3 +7,4 @@ dist-newstyle
 tools/*
 report.html
 examples/*/*gao_*.nec
+examples/*/*.nec.csv
