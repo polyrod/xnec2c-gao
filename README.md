@@ -5,7 +5,7 @@
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
 
-<div>
+
 <!--ts-->
 * [Xnec2c-gao](#xnec2c-gao)
    * [What is Xnec2c-gao](#what-is-xnec2c-gao)
@@ -26,7 +26,7 @@
    * [Output of xnec2c-gao](#output-of-xnec2c-gao)
 * [TODO](#todo)
 <!--te-->
-</div>
+
 
 ## What is Xnec2c-gao
 
