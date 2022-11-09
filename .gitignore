@@ -6,3 +6,4 @@ dist-newstyle
 .debpkg/*
 tools/*
 report.html
+examples/*/*gao_*.nec
