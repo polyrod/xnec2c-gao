@@ -198,6 +198,7 @@ The fewer and narrower the BND Cards are the faster xnec2c-gao will run. Also th
 will speed up the calculation if \<step\> is lower. So you could also define one FR Card that sweeps the 2m band very detailed, and
 a BND Card for 2m Band that has only a few steps, to make optimization fast and final display detailed.
 
+Example : examples/awx/
 
 # From .gao file to .gao.nec files
 
@@ -210,13 +211,16 @@ This will yield:
      
     xnec2c-gao - a genetic algorithm optimizer for your antenna model
 
-    Usage: xnec2c-gao (-f|--gaofile FILENAME) [-v] [-d|--select-distinct] 
-                      [-s|--population-size INT] [-c|--generation-count INT] 
-                      [-o|--optimization-mode omode] [-y|--directional-mode dmode]
+    Usage: xnec2c-gao [--version] (-f|--gaofile FILENAME) [-v] 
+                      [-d|--select-distinct] [-s|--population-size INT] 
+                      [-c|--generation-count INT] [-o|--optimization-mode omode] 
+                      [-y|--directional-mode dmode]
 
       Run an optimizer for GAOModel FILENAME
 
     Available options:
+      -h,--help                Show this help text
+      --version                Show version
       -f,--gaofile FILENAME    GAO Model to optimize
       -v                       How verbose to optimize (can be specified multiple
                                times)
@@ -227,12 +231,11 @@ This will yield:
                                How many generations to run the optimizer
                                (default: 10)
       -o,--optimization-mode omode
-                               What should we optimize for: VSWR,GAIN,VSWRGAIN
-                               (default: VSWRGAIN)
+                               What should we optimize for: vswr, gain, vswr+gain
+                               (default: vswr+gain)
       -y,--directional-mode dmode
-                               Are we optimizing a symetrical or directive antenna:
-                               SYMETRICAL,DIRECTIVE (default: SYMETRICAL)
-      -h,--help                Show this help text
+                               Are we optimizing a symmetrical or directive antenna:
+                               symmetrical, directive (default: symetrical)
 
     Copyright 2022 Maurizio Di Pietro DC1MDP. Program is provided "as is". Author is
     not responsible for any havoc caused by the usage of this software. Use at own
@@ -277,3 +280,11 @@ This error doesn't indicate that you used the wrong number delimeter , but at le
 xnec2c-gao will run for n generations and present you the evolved survivors, you can choose to continue optimizing 
 or if you are satisfied quit the optimization in which case xnec2c-gao will write one .nec file for each survivor.
 The filename of the necfile will also contain the AVSWR calculated by xnec2c.
+
+# TODO
+
+  * examples are not clean
+  * genetic parameters command line options
+  * sanity checks for radius, segment length, ratios
+  * verbosity logging
+  * ...
