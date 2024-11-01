@@ -66,6 +66,8 @@ card = do
       gsymCard,
       bndCard,
       gwCard,
+      gaCard,
+      gmCard,
       frCard,
       enCard,
       geCard,
@@ -86,7 +88,9 @@ cmCard,
   gsymCard,
   bndCard,
   gwCard,
+  gaCard,
   geCard,
+  gmCard,
   frCard,
   ldCard,
   gnCard,
@@ -126,6 +130,24 @@ gwCard = do
   [epx, epy, epz] <- count 3 $ lexeme expr
   r <- lexeme expr
   return $ Card $ GW ct segc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r)
+gaCard = do
+  void $ lexeme $ symbol "GA"
+  ct <- lexeme L.decimal
+  segc <- lexeme L.decimal
+  arc_radius <- lexeme expr
+  [a1, a2] <- count 2 $ lexeme expr
+  wire_radius <- lexeme expr
+  seg_len <- lexeme expr
+  [unused1, unused2] <- count 2 $ lexeme expr
+  return $ Card $ GA ct segc (Radius arc_radius) (Angle a1) (Angle a2) (Radius wire_radius) (Length seg_len) (Unused unused1) (Unused unused2)
+gmCard = do
+  void $ lexeme $ symbol "GM"
+  tag_incr <- lexeme L.decimal
+  new_structs <- lexeme L.decimal
+  [rx, ry, rz] <- count 3 $ lexeme expr
+  [dx, dy, dz] <- count 3 $ lexeme expr
+  tag_start <- lexeme L.decimal
+  return $ Card $ GM tag_incr new_structs (Point3 rx ry rz) (Point3 dx dy dz) tag_start
 bndCard = gaodbg "bndCard" $ do
   void $ lexeme $ symbol "BND"
   i <- T.pack <$> lexeme (some alphaNumChar)

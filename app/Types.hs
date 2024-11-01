@@ -131,6 +131,8 @@ data CardType a
   = CM Text
   | CE Text
   | GW CardTag SegmentCount (Point3 a) (Point3 a) (Radius a)
+  | GA CardTag SegmentCount (Radius a) (Angle a) (Angle a) (Radius a) (Length a) (Unused a) (Unused a)
+  | GM CardTag SegmentCount (Point3 a) (Point3 a) CardTag
   | GE GroundType
   | FR Text
   | LD
@@ -159,7 +161,16 @@ type CardTag = Int
 
 type SegmentCount = Int
 
+newtype Unused a = Unused a
+  deriving (Show)
+
+newtype Length a = Length a
+  deriving (Show)
+
 newtype Radius a = Radius a
+  deriving (Show)
+
+newtype Angle a = Angle a
   deriving (Show)
 
 data Point3 a = Point3 {x, y, z :: a}
