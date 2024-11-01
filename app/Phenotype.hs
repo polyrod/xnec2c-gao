@@ -59,6 +59,23 @@ evalCard env (Card (GW ct sc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r
       epz' = eval env epz
       r' = eval env r
   return (env, Card (GW ct sc (Point3 spx' spy' spz') (Point3 epx' epy' epz') (Radius r')))
+evalCard env (Card (GA ct sc (Radius r1) (Angle a1) (Angle a2) (Radius r2) (Length l1) (Unused u1) (Unused u2))) = do
+  let r1' = eval env r1
+      a1' = eval env a1
+      a2' = eval env a2
+      r2' = eval env r2
+      l1' = eval env l1
+      u1' = eval env u1
+      u2' = eval env u2
+  return (env, Card (GA ct sc (Radius r1') (Angle a1') (Angle a2') (Radius r2') (Length l1') (Unused u1') (Unused u2')))
+evalCard env (Card (GM cto sc (Point3 ax ay az) (Point3 dx dy dz) cts)) = do
+  let ax' = eval env ax
+      ay' = eval env ay
+      az' = eval env az
+      dx' = eval env dx
+      dy' = eval env dy
+      dz' = eval env dz
+  return (env, Card (GM cto sc (Point3 ax' ay' az') (Point3 dx' dy' dz') cts))
 evalCard env (Card (CM t)) = pure (env, Card (CM t))
 evalCard env (Card (CE t)) = pure (env, Card (CE t))
 evalCard env (Card (EX t)) = pure (env, Card (EX t))
@@ -120,6 +137,40 @@ renderCard _ (Card (GW ct sc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r
       <> toText epz
       <> tab
       <> toText r
+      <> nl
+renderCard _ (Card (GA ct sc (Radius r1) (Angle a1) (Angle a2) (Radius r2) (Length l1) (Unused u1) (Unused u2))) =
+  run $
+    padr (string "GA") <> tab <> padl (decimal ct) <> tab <> padl (decimal sc) <> tab
+      <> toText r1
+      <> tab
+      <> toText a1
+      <> tab
+      <> toText a2
+      <> tab
+      <> toText r2
+      <> tab
+      <> toText l1
+      <> tab
+      <> toText u1
+      <> tab
+      <> toText u2
+      <> nl
+renderCard _ (Card (GM cto sc (Point3 ax ay az) (Point3 dx dy dz) cts)) =
+  run $
+    padr (string "GM") <> tab <> padl (decimal cto) <> tab <> padl (decimal sc) <> tab
+      <> toText ax
+      <> tab
+      <> toText ay
+      <> tab
+      <> toText az
+      <> tab
+      <> toText dx
+      <> tab
+      <> toText dy
+      <> tab
+      <> toText dz
+      <> tab
+      <> padl (decimal cts)
       <> nl
 renderCard _ (Card (SYM _ _)) = ""
 renderCard _ (Card (GSYM _ _)) = ""
