@@ -52,15 +52,15 @@ applyGenOperations = do
 genetics :: Individual -> GAO [Individual]
 genetics i = do
   r <- liftIO $ randomRIO (0.0, 1.0) :: GAO Float
-  if r < 0.8
+  if r < 0.4
     then mutate i
     else crossover i
 
 crossover :: Individual -> GAO [Individual]
 crossover ind = do
   s <- get
-  mateidx <- liftIO $ randomRIO (1, length (generation s) - 1)
-  rcidx <- liftIO $ randomRIO (1, length (prototype s) - 1)
+  mateidx <- liftIO $ randomRIO (0, (length (generation s)) - 1)
+  rcidx <- liftIO $ randomRIO (0, length (prototype s) - 1)
   let mate = generation s !! mateidx
       (ab, ba) = recombine rcidx ind mate
   pure $ nub [ab, ba]
