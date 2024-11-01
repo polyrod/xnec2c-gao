@@ -25,7 +25,7 @@ startXnec2c :: RawFilePath -> GAO ()
 startXnec2c necfile = do
   s <- get
   unless (isJust $ xnec2c s) $ do
-    let cmd = "xnec2c  --optimize -j2  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
+    let cmd = "xnec2c  --optimize -j7  -i " ++ B.unpack necfile ++ " > /dev/null 2>&1"
     xnec <- liftIO $ spawnCommand cmd
     modify (\u -> u {xnec2c = Just (XN xnec)})
 

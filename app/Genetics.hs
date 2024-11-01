@@ -13,7 +13,7 @@ import Types
 import Utils
 
 survivorRatio :: Double
-survivorRatio = 0.3
+survivorRatio = 0.5
 
 selectSurvivors :: GAO ()
 selectSurvivors = do

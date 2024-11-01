@@ -8,7 +8,7 @@ synopsis: g(enetic)a(lgorithm)o(ptimizer) - An external genetic optimizer for xn
 -- A longer description of the package.
 description: After you embelished a nec file with SYMBOLS and GENETICSYMBOLS to a gao file,
              running the optimizer generates concrete nec models of genetic variants and runs
-             xnec2c optimisation loop to calculate VSWR/GAIN as fittness to select survivors, 
+             xnec2c optimisation loop to calculate VSWR/GAIN as fittness to select survivors,
              applies genetic operations (mutation,crossover), adds random individuals, and reruns
              loop until you are satisfied with the results, then writes survivors to nec files for you to build.
 
@@ -49,33 +49,33 @@ executable xnec2c-gao
                  , Display
                  , Output
                  , Paths_xnec2c_gao
-                 
+
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:
-        base ^>=4.14.1.0,
-        bytestring                  >= 0.10.12 && < 0.11,
-        containers                  >= 0.6.4 && < 0.7,
-        filepath-bytestring         >= 1.4.2 && < 1.5,
-        unix                        >= 2.7.2 && < 2.8,
-        hinotify                    >= 0.4.1 && < 0.5,
-        text                        >= 1.2.5 && < 1.3,
-        megaparsec                  >= 9 && < 9.3,
-        mtl                         >= 2.2.2 && < 2.3,
-        parser-combinators          >= 1.3.0 && < 1.4,
-        scientific                  >= 0.3.7 && < 0.4,
-        monad-loops                 >= 0.4.3 && < 0.5,
-        monadlist                   >= 0.0.2 && < 0.1,
-        optparse-applicative        >= 0.17.0 && < 0.18,
-        process                     >= 1.6.13 && < 1.7,
-        pretty-simple               >= 4.1.2 && < 4.2,
-        random                      >= 1.2.1 && < 1.3,
+        base,
+        bytestring,
+        containers,
+        filepath-bytestring,
+        unix,
+        hinotify,
+        text,
+        megaparsec,
+        mtl,
+        parser-combinators,
+        scientific,
+        monad-loops,
+        monadlist,
+        optparse-applicative,
+        process,
+        pretty-simple,
+        random,
         these,
         directory,
         gitrev,
         AC-Angle,
-        text-builder                >= 0.6.7 && < 0.7,
+        text-builder
 
     hs-source-dirs:   app
     default-language: Haskell2010
