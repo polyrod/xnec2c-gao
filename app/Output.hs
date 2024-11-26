@@ -76,7 +76,7 @@ toFile (n, i) = do
   let (Fitness vswr _ _) = getFitness $ fromJust $ phenotype i
       fn =
         gaoFile (opts s) ++ "_" ++ show n
-          ++ "_[AVSVR:"
+          ++ "_[AVSWR:"
           ++ show vswr
           ++ "].nec"
       p = let t = fromJust $ phenotype i in outputPhenotype t
