@@ -4,6 +4,7 @@
 module Output where
 
 import Control.Concurrent
+import Control.Monad
 import Control.Monad.Loops
 import Control.Monad.State
 import qualified Data.ByteString.Char8 as B
@@ -75,7 +76,9 @@ toFile (n, i) = do
   s <- get
   let (Fitness vswr _ _) = getFitness $ fromJust $ phenotype i
       fn =
-        gaoFile (opts s) ++ "_" ++ show n
+        gaoFile (opts s)
+          ++ "_"
+          ++ show n
           ++ "_[AVSWR:"
           ++ show vswr
           ++ "].nec"

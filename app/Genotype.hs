@@ -1,5 +1,6 @@
 module Genotype where
 
+import Control.Monad
 import Control.Monad.State
 import qualified Data.Map as M
 import System.Random

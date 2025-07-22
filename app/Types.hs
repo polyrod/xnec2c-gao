@@ -10,7 +10,7 @@ module Types where
 
 import Control.Applicative
 import Control.Monad.IO.Class
-import Control.Monad.Reader
+import Control.Monad.Plus
 import Control.Monad.State
 import Data.Map (Map)
 import qualified Data.Map as M

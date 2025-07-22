@@ -7,11 +7,11 @@
 
 module GAOParser where
 
+import Control.Monad
 import Control.Monad.Combinators.Expr
 import Control.Monad.IO.Class
 import Control.Monad.State
 import qualified Data.Char as Char
-import Data.List (foldl')
 import Data.Proxy
 import Data.Scientific (Scientific, toRealFloat)
 import qualified Data.Scientific as Sci
@@ -246,7 +246,7 @@ parseGAOFile = do
       put s {gaomodel = m}
       when (verbosity (opts s) > 0) $ liftIO $ pPrint m
 
-gaodbg :: Show a => String -> Parser a -> Parser a
+gaodbg :: (Show a) => String -> Parser a -> Parser a
 gaodbg str p = do
   s <- lift get
   if verbosity (opts s) > 1

@@ -18,7 +18,7 @@ import Display
 import Output
 import System.FilePath.Posix.ByteString
 import System.Posix.Directory.ByteString
-import Text.Builder
+import TextBuilder
 import Types
 import Utils
 
@@ -119,72 +119,88 @@ renderDeck bs cs = do
       else Phenotype $ These p ppb
 
 renderCard :: Maybe Band -> Card Float -> Text
-renderCard _ (Card (CM t)) = run $ padr (string "CM") <> tab <> text t <> nl
-renderCard _ (Card (CE t)) = run $ padr (string "CE") <> tab <> text t <> nl
+renderCard _ (Card (CM t)) = toText $ padr (string "CM") <> tab <> text t <> nl
+renderCard _ (Card (CE t)) = toText $ padr (string "CE") <> tab <> text t <> nl
 renderCard _ (Card (GW ct sc (Point3 spx spy spz) (Point3 epx epy epz) (Radius r))) =
-  run $
-    padr (string "GW") <> tab <> padl (decimal ct) <> tab <> padl (decimal sc) <> tab
-      <> toText spx
+  toText $
+    padr (string "GW")
       <> tab
-      <> toText spy
+      <> padl (decimal ct)
       <> tab
-      <> toText spz
+      <> padl (decimal sc)
       <> tab
-      <> toText epx
+      <> asText spx
       <> tab
-      <> toText epy
+      <> asText spy
       <> tab
-      <> toText epz
+      <> asText spz
       <> tab
-      <> toText r
+      <> asText epx
+      <> tab
+      <> asText epy
+      <> tab
+      <> asText epz
+      <> tab
+      <> asText r
       <> nl
 renderCard _ (Card (GA ct sc (Radius r1) (Angle a1) (Angle a2) (Radius r2) (Length l1) (Unused u1) (Unused u2))) =
-  run $
-    padr (string "GA") <> tab <> padl (decimal ct) <> tab <> padl (decimal sc) <> tab
-      <> toText r1
+  toText $
+    padr (string "GA")
       <> tab
-      <> toText a1
+      <> padl (decimal ct)
       <> tab
-      <> toText a2
+      <> padl (decimal sc)
       <> tab
-      <> toText r2
+      <> asText r1
       <> tab
-      <> toText l1
+      <> asText a1
       <> tab
-      <> toText u1
+      <> asText a2
       <> tab
-      <> toText u2
+      <> asText r2
+      <> tab
+      <> asText l1
+      <> tab
+      <> asText u1
+      <> tab
+      <> asText u2
       <> nl
 renderCard _ (Card (GM cto sc (Point3 ax ay az) (Point3 dx dy dz) cts)) =
-  run $
-    padr (string "GM") <> tab <> padl (decimal cto) <> tab <> padl (decimal sc) <> tab
-      <> toText ax
+  toText $
+    padr (string "GM")
       <> tab
-      <> toText ay
+      <> padl (decimal cto)
       <> tab
-      <> toText az
+      <> padl (decimal sc)
       <> tab
-      <> toText dx
+      <> asText ax
       <> tab
-      <> toText dy
+      <> asText ay
       <> tab
-      <> toText dz
+      <> asText az
+      <> tab
+      <> asText dx
+      <> tab
+      <> asText dy
+      <> tab
+      <> asText dz
       <> tab
       <> padl (decimal cts)
       <> nl
 renderCard _ (Card (SYM _ _)) = ""
 renderCard _ (Card (GSYM _ _)) = ""
 renderCard _ (Card (BND _)) = ""
-renderCard Nothing (Card (FR t)) = run $ padr (string "FR") <> tab <> text (T.concat $ intersperse "\t" $ T.words t) <> nl
+renderCard Nothing (Card (FR t)) = toText $ padr (string "FR") <> tab <> text (T.concat $ intersperse "\t" $ T.words t) <> nl
 renderCard (Just _) (Card (FR _)) = ""
-renderCard Nothing (Card EN) = run $ padr (string "EN") <> nl
+renderCard Nothing (Card EN) = toText $ padr (string "EN") <> nl
 renderCard (Just b) (Card EN) =
   let low = fst $ width b
       high = snd $ width b
       stps = steps b
       delta = (high - low) / fromIntegral stps
-   in run $
-        padr (string "FR") <> tab
+   in toText $
+        padr (string "FR")
+          <> tab
           <> padl (decimal (0 :: Int))
           <> tab
           <> padl (decimal stps)
@@ -193,15 +209,15 @@ renderCard (Just b) (Card EN) =
           <> tab
           <> decimal (0 :: Int)
           <> tab
-          <> toText low
+          <> asText low
           <> tab
-          <> toText delta
+          <> asText delta
           <> tab
-          <> toText high
+          <> asText high
           <> nl
           <> padr (string "EN")
           <> nl
-renderCard _ (Card (Other t1 t2)) = run $ padr (text t1) <> tab <> text (T.concat $ intersperse "\t" $ T.words t2) <> nl
+renderCard _ (Card (Other t1 t2)) = toText $ padr (text t1) <> tab <> text (T.concat $ intersperse "\t" $ T.words t2) <> nl
 renderCard _ _ = error "catchall"
 
 evalPhenotypes :: GAO ()
@@ -215,8 +231,10 @@ evalPhenotypes = do
       ( \(idx, i) -> do
           liftIO $
             T.putStrLn $
-              run $
-                nl <> tab <> string "Phenotype "
+              toText $
+                nl
+                  <> tab
+                  <> string "Phenotype "
                   <> decimal (idx :: Int)
                   <> string " of "
                   <> decimal ptc
@@ -238,7 +256,8 @@ evalPhenotypes = do
 
           return i'
       )
-      $ zip [1 ..] $ generation s
+      $ zip [1 ..]
+      $ generation s
   modify (\u -> u {generation = g', genNum = genNum u + 1, done = genNum u + 1 > genCount u})
 
 runPhenotype :: Individual -> GAO Individual
@@ -257,22 +276,22 @@ runPhenotype i =
           pure $ i {phenotype = Just $ Phenotype $ This $ PhenotypeData (data_ p) f}
         That bdm -> do
           brm <-
-            liftIO $
-              mapM
+            liftIO
+              $ mapM
                 ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
-                $ M.assocs bdm
+              $ M.assocs bdm
           pure $ i {phenotype = Just $ Phenotype $ That $ M.fromList brm}
         These p bdm -> do
           brm <-
-            liftIO $
-              mapM
+            liftIO
+              $ mapM
                 ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
                     pure (b, PhenotypeData d f')
                 )
-                $ M.assocs bdm
+              $ M.assocs bdm
           pure $ i {phenotype = Just $ Phenotype $ These p $ M.fromList brm}
       else pure i
