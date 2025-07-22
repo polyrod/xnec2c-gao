@@ -19,10 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Upgrade ghcup
-      run: | 
-        ghcup upgrade
-    - uses: actions/setup-haskell@v1
+    - uses: haskell-actions/setup@v2
       with:
         ghc-version: '9.10.1'
         cabal-version: '3.14.2'
