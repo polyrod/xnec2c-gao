@@ -47,7 +47,9 @@ To build from source
         $ tar xzvf xnec2c-gao_<version>.tar.gz
         $ cd xnec2c-gao
         $ cabal build
-        $ sudo cabal install
+        $ cabal install
+
+This installs the binary xnec2c-gao to $HOME/.cabal/bin . Include this directory in PATH.
 
 ## Why do we need an external optimizer for Xnec2c
 
