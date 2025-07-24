@@ -190,6 +190,14 @@ a BND Card for 2m Band that has only a few steps, to make optimization fast and 
 
 Example : examples/awx/
 
+## Comments
+
+Lines beginning with hash (`#`) and exist anywhere in the file. This are inline comments. They are passed
+though unmodified and ignored by by xnec2c / nec2c.
+
+    # this is a comment
+    SYM freq := 145800
+
 # From .gao file to .gao.nec files
 
 After you prepared your .gao file for your antenna model, you can invoke the optimizer.
