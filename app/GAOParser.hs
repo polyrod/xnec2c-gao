@@ -79,7 +79,8 @@ card = do
       symCard,
       gsymCard,
       gaoCard,
-      otherCard
+      otherCard,
+      comment
     ]
 
 cmCard,
@@ -99,7 +100,8 @@ cmCard,
   ekCard,
   rpCard,
   gaoCard,
-  otherCard ::
+  otherCard,
+  comment ::
     Parser (Card Expr)
 cmCard = gaodbg "CM" $ do
   void $ lexeme $ symbol "CM"
@@ -174,6 +176,11 @@ otherCard = gaodbg "Other" $ do
   ct <- lexeme $ some alphaNumChar
   rest <- lexeme $ many printChar
   return $ Card $ Other (T.pack ct) (T.pack rest)
+comment = gaodbg "Comment" $ do
+  void $ lexeme $ single '#'
+  rest <- lexeme $ many printChar 
+  return $ Card $ Other "#" (T.pack rest)
+
 
 identifier :: Parser Text
 identifier = do
