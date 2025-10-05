@@ -14,6 +14,10 @@
 Xnec2c-gao is an external optimizer for the antenna modeling software [Xnec2c](https://www.xnec2c.org/) written by [Neoklis Kyriazis,
 5B4AZ](http://www.5b4az.org/). It uses an genetic algorithm to find solutions in a multidimensional search space.
 
+
+![xnec2c-gao](Media/Recording.gif "xnec2c-gao running")
+
+
 ### Features
 
   * automatically runs Xnec2c
