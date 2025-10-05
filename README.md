@@ -233,7 +233,7 @@ This will yield:
                                (default: vswr+gain)
       -y,--directional-mode dmode
                                Are we optimizing a symmetrical or directive antenna:
-                               symmetrical, directive (default: symetrical)
+                               symmetrical, directive (default: symmetrical)
 
     Copyright 2022 Maurizio Di Pietro DC1MDP. Program is provided "as is". Author is
     not responsible for any havoc caused by the usage of this software. Use at own
