@@ -251,6 +251,10 @@ So to execute your optimization invoke:
 
     $ xnec2c-gao -d -f dipole.gao
 
+[! Important]
+
+Check Xnec2c "Optimization Settings". Make sure to watch for .nec file changes and output .csv .
+
 ## Fixing errors in gao file
 
     $ xnec2c-gao -d -f dipole.gao
