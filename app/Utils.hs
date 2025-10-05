@@ -52,7 +52,7 @@ omodeShow GAIN = "gain"
 omodeShow VSWRGAIN = "vswr+gain"
 
 dmodeShow :: DirectiveMode -> String
-dmodeShow SYMMETRICAL = "symetrical"
+dmodeShow SYMMETRICAL = "symmetrical"
 dmodeShow DIRECTIVE = "directive"
 
 ppState :: GAO ()
