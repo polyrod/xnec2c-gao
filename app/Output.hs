@@ -30,7 +30,7 @@ startXnec2c necfile = do
     xnec <- liftIO $ spawnCommand cmd
     modify (\u -> u {xnec2c = Just (XN xnec)})
 
-runWithXnec :: RawFilePath -> Text -> IO Fitness
+runWithXnec :: RawFilePath -> Text -> IO (Maybe Fitness)
 runWithXnec necfile bpheno = do
   csvReady <- liftIO $ newIORef False
   T.writeFile (B.unpack necfile) bpheno
@@ -47,7 +47,10 @@ runWithXnec necfile bpheno = do
   let bgain = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 10) <$> csvData)
   let bfbr = (1 / linecount) * sum ((\l -> read @Float $ T.unpack $ T.splitOn "," l !! 16) <$> csvData)
 
-  return $ Fitness bvswr bgain bfbr
+  return $
+    if (bvswr < 0) || (bvswr > 100)
+      then Nothing
+      else Just $ Fitness bvswr bgain bfbr
 
 tidyUp :: GAO ()
 tidyUp = do

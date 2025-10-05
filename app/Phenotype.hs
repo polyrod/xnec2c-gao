@@ -228,39 +228,43 @@ evalPhenotypes = do
   let ptc = Prelude.length $ generation s
   g' <-
     mapM
-      ( \(idx, i) -> do
-          liftIO $
-            T.putStrLn $
-              toText $
-                nl
-                  <> tab
-                  <> string "Phenotype "
-                  <> decimal (idx :: Int)
-                  <> string " of "
-                  <> decimal ptc
-                  <> nl
-          i' <- runPhenotype i
-          liftIO $ printGenotype i'
-          liftIO $ T.putStr "\n"
-          liftIO $ case getPhenotype $ fromJust $ phenotype i' of
-            This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
-            That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
-            These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
+      ( \(idx, i) ->
+          do
+            i'' <- runPhenotype i
+            case i'' of
+              Just i' -> do
+                liftIO $
+                  T.putStrLn $
+                    toText $
+                      nl
+                        <> tab
+                        <> string "Phenotype "
+                        <> decimal (idx :: Int)
+                        <> string " of "
+                        <> decimal ptc
+                        <> nl
+                liftIO $ printGenotype i'
+                liftIO $ T.putStr "\n"
+                liftIO $ case getPhenotype $ fromJust $ phenotype i' of
+                  This (PhenotypeData _ f) -> T.putStrLn $ renderFitness "" f
+                  That bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
+                  These _ bpm -> mapM_ (\(Band bi _ _, PhenotypeData _ f) -> T.putStrLn $ renderFitness bi f) $ M.assocs bpm
 
-          liftIO $ T.putStr "\n"
-          liftIO $ T.putStrLn $ renderScore (optfun s) $ fromJust $ phenotype i'
-          liftIO $ T.putStr "\n"
-          modes <- renderOptModes
-          liftIO $ T.putStrLn modes
-          liftIO $ T.putStrLn "\n\n\n"
+                liftIO $ T.putStr "\n"
+                liftIO $ T.putStrLn $ renderScore (optfun s) $ fromJust $ phenotype i'
+                liftIO $ T.putStr "\n"
+                modes <- renderOptModes
+                liftIO $ T.putStrLn modes
+                liftIO $ T.putStrLn "\n\n\n"
 
-          return i'
+                return $ Just i'
+              Nothing -> return Nothing
       )
       $ zip [1 ..]
       $ generation s
-  modify (\u -> u {generation = g', genNum = genNum u + 1, done = genNum u + 1 > genCount u})
+  modify (\u -> u {generation = catMaybes g', genNum = genNum u + 1, done = genNum u + 1 > genCount u})
 
-runPhenotype :: Individual -> GAO Individual
+runPhenotype :: Individual -> GAO (Maybe Individual)
 runPhenotype i =
   do
     s <- get
@@ -273,25 +277,35 @@ runPhenotype i =
       then case ps of
         This p -> liftIO $ do
           f <- runWithXnec necfile $ data_ p
-          pure $ i {phenotype = Just $ Phenotype $ This $ PhenotypeData (data_ p) f}
+          case f of
+            Just f' -> pure $ Just $ i {phenotype = Just $ Phenotype $ This $ PhenotypeData (data_ p) f'}
+            Nothing -> pure Nothing
         That bdm -> do
           brm <-
             liftIO
               $ mapM
                 ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
-                    pure (b, PhenotypeData d f')
+                    case f' of
+                      Just f -> pure $ Just $ (b, PhenotypeData d f)
+                      Nothing -> pure $ Nothing
                 )
               $ M.assocs bdm
-          pure $ i {phenotype = Just $ Phenotype $ That $ M.fromList brm}
+          if all isJust brm
+            then pure $ Just $ i {phenotype = Just $ Phenotype $ That $ M.fromList $ catMaybes brm}
+            else pure $ Nothing
         These p bdm -> do
           brm <-
             liftIO
               $ mapM
                 ( \(b, PhenotypeData d _) -> do
                     f' <- runWithXnec necfile d
-                    pure (b, PhenotypeData d f')
+                    case f' of
+                      Just f -> pure $ Just $ (b, PhenotypeData d f)
+                      Nothing -> pure $ Nothing
                 )
               $ M.assocs bdm
-          pure $ i {phenotype = Just $ Phenotype $ These p $ M.fromList brm}
-      else pure i
+          if all isJust brm
+            then pure $ Just $ i {phenotype = Just $ Phenotype $ These p $ M.fromList $ catMaybes brm}
+            else pure $ Nothing
+      else pure $ Just i
