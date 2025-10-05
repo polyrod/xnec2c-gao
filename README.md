@@ -24,6 +24,12 @@ Xnec2c-gao is an external optimizer for the antenna modeling software [Xnec2c](h
   * ability to specify multiple "bands" as optimization targets
   * one output nec file per survivor
 
+## In the Media
+
+Onno (VK3FLAB) presents xnec2c-gao in Episode 523 of his wonderfull Podcast "Foundations of Amateur Radio".
+
+  * [Foundations of Amateur Radio Podcast](https://podcasts.vk6flab.com/podcasts/foundations)
+  * [Episode 523 about Xnec2c-gao](http://podcasts.itmaze.com.au/foundations/20250706.foundations-of-amateur-radio.mp3)
 
 ## Installing xnec2c-gao
 
@@ -131,7 +137,7 @@ which are implemented as GSYM Cards.
 
 ## GSYM Card
 
-The GSYM Card represents essantialy a gene in the genetic algorithm used to optimize your antenna model.
+The GSYM Card represents essentialy a gene in the genetic algorithm used to optimize your antenna model.
 You can define any number of GSYM Cards each represents a dimension in a multidimensional search space.
 Thats why i designed the optimizer as an genetic algorithem , because linear approximation works good
 for low dimensional search, whereas genetic algorithem have their strength in multidimensional domains.
