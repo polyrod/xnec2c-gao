@@ -75,7 +75,7 @@ recombine i ind mate =
       tb = drop i b
       ab = M.fromList $ ha ++ tb
       ba = M.fromList $ hb ++ ta
-   in (ind {genotype = Genotype ab}, mate {genotype = Genotype ba})
+   in (ind {genotype = Genotype ab, phenotype = Nothing, environment = M.empty}, mate {genotype = Genotype ba, phenotype = Nothing, environment = M.empty})
 
 mutate :: Individual -> GAO [Individual]
 mutate ind = do
