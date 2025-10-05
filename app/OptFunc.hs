@@ -1,11 +1,12 @@
 module OptFunc where
 
+import Debug.Trace
 import Types
 
 optFunc :: OptimizingMode -> DirectiveMode -> (Fitness -> Float)
 optFunc VSWR dm = \(Fitness s _ f) -> crookedSwr s $ swr s + fbr dm f
 optFunc GAIN dm = \(Fitness _ g f) -> gain g + fbr dm f
-optFunc VSWRGAIN dm = \(Fitness s g f) -> crookedSwr s $ swr s + gain g + fbr dm f
+optFunc VSWRGAIN dm = \(Fitness s g f) -> abs $ sqrt $ (swr s) ^ (5 :: Int) + (gain g) ^ (2 :: Int) + (fbr dm f) ^ (3 :: Int)
 
 swrMaxThrs :: Float
 swrMaxThrs = 1.5
@@ -17,12 +18,12 @@ crookedSwr s f =
     else f
 
 swr :: Float -> Float
-swr s
-  | s < swrMaxThrs = (swrMaxThrs - s) * 100 + (100 / s)
-  | otherwise = 100 / s
+swr s =
+  let v = 100 / s
+   in crookedSwr s v
 
 gain :: Float -> Float
-gain g = 30 * g
+gain g = g
 
 fbr :: DirectiveMode -> Float -> Float
 fbr SYMMETRICAL 0 = 1000
