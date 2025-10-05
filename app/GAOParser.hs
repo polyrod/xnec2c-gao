@@ -178,9 +178,8 @@ otherCard = gaodbg "Other" $ do
   return $ Card $ Other (T.pack ct) (T.pack rest)
 comment = gaodbg "Comment" $ do
   void $ lexeme $ single '#'
-  rest <- lexeme $ many printChar 
+  rest <- lexeme $ many printChar
   return $ Card $ Other "#" (T.pack rest)
-
 
 identifier :: Parser Text
 identifier = do
