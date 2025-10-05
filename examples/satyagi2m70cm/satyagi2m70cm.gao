@@ -1,0 +1,60 @@
+CM --- NEC2 Input Fi05le created or edited by xnec2c 4.4.12 ---
+CE --- End Comments ---
+SYM afreq := 145800
+SYM bfreq := 437000
+BND 2msat  144,800  145,000  20
+BND 70cmsat  435,000  439,000  20
+SYM c := 300000
+SYM vk := 0,96
+SYM base :=  2
+SYM rdp := 0,0075 
+SYM rpe := 0,005 
+GSYM scale := [0,9...1,1]
+SYM alambda := vk * c / afreq
+SYM blambda := vk * c / bfreq
+SYM alamq := scale * (alambda / 4)
+SYM blamq := scale * (blambda / 4)
+GSYM aqdr := [0,01...0,2]
+GSYM aqdd := [0,01...0,2]
+GSYM agoffr := [0,1...0,25]
+GSYM agoffd := [0,05...0,3]
+SYM afpoff := 0
+SYM aoffr := alambda * agoffr
+SYM aoffd := (-1) * alambda * agoffd
+SYM aradi := alamq
+SYM arefl := alamq + (aqdr * alamq)
+SYM adire := alamq - (aqdd * alamq)
+SYM blambda := vk * c / bfreq
+SYM blamq := scale * (blambda / 4)
+GSYM bqdr := [0,01...0,2]
+GSYM bqdd1 := [0,01...0,2]
+GSYM bqdd2 := [0,01...0,2]
+GSYM bgoffr := [0,1...0,25]
+GSYM bgoffd1 := [0,05...0,3]
+GSYM bgoffd2 := [0,05...0,3]
+GSYM deltafp := [0,01...0,05]
+SYM bfpoff := afpoff - deltafp 
+SYM boffr := bfpoff + blambda * bgoffr
+SYM boffd1 := bfpoff + (-1) * blambda * bgoffd1
+SYM boffd2 := boffd1 + (-1 * blambda * bgoffd2)
+SYM bradi := blamq
+SYM brefl := blamq + (bqdr * blamq)
+SYM bdire1 := blamq - (bqdd1 * blamq)
+SYM bdire2 := bdire1 - (bqdd2 * blamq)
+GW     1    15   0,00000E+00-bradi  afpoff  base       0,00000E+00+bradi  afpoff  base    rdp
+GW     2    15   0,00000E+00-bradi  afpoff  base       0,00000E+00-aradi  afpoff  base    rdp
+GW     3    15   0,00000E+00+bradi  afpoff  base       0,00000E+00+aradi  afpoff  base    rdp
+GW     4    15   0,00000E+00-arefl  aoffr         base       0,00000E+00+arefl  afpoff+aoffr         base    rpe
+GW     5    15   0,00000E+00-adire  aoffd         base       0,00000E+00+adire  afpoff+aoffd         base    rpe
+GW     6    15   0,00000E+00-bradi  bfpoff  base       0,00000E+00+bradi  bfpoff  base    rdp
+GW     7    15   0,00000E+00-brefl  boffr         base       0,00000E+00+brefl  boffr         base    rpe
+GW     8    15   0,00000E+00-bdire1  boffd1         base       0,00000E+00+bdire1  boffd1         base    rpe
+GW     9    15   0,00000E+00-bdire2  boffd2         base       0,00000E+00+bdire2  boffd2         base    rpe
+GE     0     0   0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+FR     0    30     0     0  1,43800E+02  0,08200E+00  1,46200E+02  0,00000E+00  0,00000E+00  0,00000E+00
+FR     0    30     0     0  4,35000E+02  0,08200E+00  4,39000E+02  0,00000E+00  0,00000E+00  0,00000E+00
+GN     -1     0     0      0  1,20000E+01  1,00000E-02  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+EX     0     1     7      0  1,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+EK     -1     0     0      0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+RP     0    18    72   1000  0,00000E+00  0,00000E+00  5,00000E+00  5,00000E+00  1,00000E+01  0,00000E+00
+EN     0     0     0      0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00

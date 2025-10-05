@@ -1,0 +1,49 @@
+CM ---
+CM 5-Element Yagi at 146 MHz
+CM Compatible with xnec2c-gao
+CM <|radius: 0.0256|x_d0: 0.3397|x_d1: 0.4289|x_d2: 0.6125|x_d3: 1.0635|>
+CM <|radius: 0.0220|x_d0: 0.2420|x_d1: 0.3311|x_d2: 0.6373|x_d3: 1.0817|>
+CE ---
+# --- Elements ---
+GSYM radius := [0,010...0,030]
+SYM len_r1 := 1,001
+SYM len_d0 := 0,986
+SYM len_d1 := 0,901
+SYM len_d2 := 0,892
+SYM len_d3 := 0,881
+GSYM x_d0 := [0,300...0,360]
+GSYM x_d1 := [0,400...0,500]
+GSYM x_d2 := [0,600...0,800]
+GSYM x_d3 := [0,900...1,100]
+# Number of segments per wire
+#     Seg X1      Y1    Z1             X2      Y2     Z2
+GW 1   21 0       0     (-len_r1/2)    0       0      len_r1/2    radius
+GW 2   21 x_d0   0      (-len_d0/2)    x_d0    0      len_d0/2    radius
+GW 3   21 x_d1    0     (-len_d1/2)    x_d1    0      len_d1/2    radius
+GW 4   21 x_d2    0     (-len_d2/2)    x_d2    0      len_d2/2    radius
+GW 5   21 x_d3    0     (-len_d3/2)    x_d3    0      len_d3/2    radius
+GE 0
+# --- Frequency ---
+#  type steps     FREQ Step DFRQ
+FR 0       11 0 0 145.5   0,1  146.5
+# --- Excitation ---
+#  TYPE Tag Seg PARAM REAL IMAG
+EX 0      2  11     0   1    0
+# --- Radiation Pattern ---
+# RP NTH NPH RADIUS THETA PHI DTH DPH
+# NTH    := 91         → Number of theta angles (0 to 90° in 1° steps)
+# NPH    := 1          → Only one phi angle (phi = 0°)
+# RADIUS := 1000       → Far-field distance (in wavelengths)
+# THETA  := 0          → Start theta angle
+# PHI    := 0          → Start phi angle
+# DTH    := 1,0        → theta step
+# DPH    := 0,0        → phi step
+RP     0    37    73  1000  0  0  5  5  0 0 
+# --- Wire conductivity ---
+#   TYPE   Tag Seg Seg        S/m
+LD     5     0   0   0   37000000    0        0        0        0        0
+# --- Near field commands
+NH     0     0     0     0  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00  0,00000E+00
+NE     0    20    15     1 -1,40000E+00 -1,40000E+00  5,00000E-02  2,00000E-01  2,00000E-01  0,00000E+00
+# --- End
+EN
