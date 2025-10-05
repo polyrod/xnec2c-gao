@@ -6,6 +6,7 @@ import Types
 optFunc :: OptimizingMode -> DirectiveMode -> (Fitness -> Float)
 optFunc VSWR dm = \(Fitness s _ f) -> abs $ sqrt $ (swr s) ^ (5 :: Int) + (fbr dm f) ^ (3 :: Int)
 optFunc GAIN dm = \(Fitness _ g f) -> abs $ sqrt $ (gain g) ^ (2 :: Int) + (fbr dm f) ^ (3 :: Int)
+optFunc VSWRGAIN dm = \(Fitness s g f) -> abs $ sqrt $ (swr s) ^ (5 :: Int) + (gain g) ^ (2 :: Int) + (fbr dm f) ^ (3 :: Int)
 
 swrMaxThrs :: Float
 swrMaxThrs = 1.5
