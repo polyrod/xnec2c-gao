@@ -281,7 +281,7 @@ commaDecimal_ ::
   Integer ->
   m SP
 commaDecimal_ pxy c' = do
-  void (C.char ',')
+  void $ (C.char ',') <|> (C.char '.')
   let mkNum = foldl' step (SP c' 0) . chunkToTokens pxy
       step (SP a e') c =
         SP
