@@ -80,6 +80,12 @@ Neoklis, 5B4AZ explains Antenna Optimization in xnec2c on his [page](http://www.
 >  new frequency dependent data are calculated and saved to the .csv file and the loop repeated 
 >  until the desired results (optimization) are obtained."
 
+# Project structure analized by Devin AI
+
+Here you can find information regarding the inner workings of this project, analized and provided by AI.
+
+- ![AI generated overview](https://deepwiki.com/polyrod/xnec2c-gao]
+
 # From .nec to .gao file
 
 A .gao file is essentially a .nec file with special "SYM" and "GSYM" cards.
