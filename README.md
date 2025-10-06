@@ -84,7 +84,7 @@ Neoklis, 5B4AZ explains Antenna Optimization in xnec2c on his [page](http://www.
 
 Here you can find information regarding the inner workings of this project, analized and provided by AI.
 
-- ![AI generated overview](https://deepwiki.com/polyrod/xnec2c-gao]
+- [AI generated overview](https://deepwiki.com/polyrod/xnec2c-gao)
 
 # From .nec to .gao file
 
