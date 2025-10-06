@@ -4,7 +4,7 @@
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/haskell.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/debian.yml/badge.svg)
 ![](https://github.com/polyrod/xnec2c-gao/actions/workflows/pandoc.yml/badge.svg)
-
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/polyrod/xnec2c-gao)
 <!--ts-->
 
 <!--te-->
